@@ -26,13 +26,21 @@ enum Direction {
 	UP,
 	RIGHT,
 	BOT,
-	LEFT
+	LEFT,
+	STOP
 };
 
 enum TankType {
 	REGULAR,
 	FAST,
-	ARMOR
+	ARMORED
+};
+
+enum GunType {
+	SINGLESHOT,
+	FASTSHOT,
+	DOUBLESHOT,
+	STRONGSHOT
 };
 
 enum BonusType {

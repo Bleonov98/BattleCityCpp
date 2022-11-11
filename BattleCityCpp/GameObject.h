@@ -32,9 +32,6 @@ public:
 	virtual void EraseObject() = 0;
 
 
-
-	void DeleteObject();
-
 	bool IsObjectDelete();
 
 protected:
@@ -44,6 +41,8 @@ protected:
 
 	wd* wData;
 
+	void DeleteObject();
+
 	virtual ~GameObject() {
 		delete this;
 	}
@@ -52,7 +51,7 @@ protected:
 
 
 
-// - - - - - - - - - - DYNAMIC OBJECTS - - - - - - - - - -
+// - - - - - - - - - - OBJECTS TYPE - - - - - - - - - -
 
 
 
@@ -66,61 +65,116 @@ public:
 
 	virtual void EraseObject() = 0;
 
-
-
-	void SetNewPosition(int x, int y);
-
-	void MoveObject();
+	virtual void MoveObject() = 0;
 
 
 	int GetDirection();
 
 protected:
 
-	int _dir = UP, nX, nY;
+	void CheckNextStep();
+
+	int _dir = UP;
 };
 
 
 
-class Player : public DynamicObject 
+class StaticObject : public GameObject
 {
-	Player(wd* wData, int x, int y, int color, int speed) : DynamicObject(wData, x, y, color, speed) {
-		
+
+};
+
+
+//          --- DYNAMIC OBJECTS ---
+// ----------------- CHAR -----------------------
+
+
+
+class Character: public DynamicObject
+{
+public:
+
+	Character(wd* wData, int x, int y, int color, int speed) : DynamicObject(wData, x, y, color, speed) {
+		_speed = 3;
 	}
 
-	char16_t regularSprite[4][3][4]{
-		{
-			u" | ",
-			u"| |",
-			u"---"
-		},
-		{
-			u"|- ",
-			u"| =",
-			u"|- ",
-		},
-		{
-			u"---",
-			u"| |",
-			u" | ",
-		},
-		{
-			u" -|",
-			u"= |",
-			u" -|",
-		}
-	};
 
-	int _type = REGULAR;
+	void SetType(int type);
+
+	int GetType();
+
+
+	int GetHp();
+
+	int GetGunType();
+
+
+	void Hit();
+
+protected:
+
+	int _type = REGULAR, _gunType = SINGLESHOT, _hp = 25;
+
+	void Death();
+
 };
 
 
 
-class Enemy : public DynamicObject 
+class Player : public Character
+{
+public:
+
+	Player(wd* wData, int x, int y, int color, int speed) : Character(wData, x, y, color, speed) {}
+
+	void DrawObject() override;
+
+	void EraseObject() override;
+
+	void MoveObject() override;
+
+private:
+
+	void Control();
+
+	char16_t regularSprite[5][3][4]{
+		{
+			u" | ",
+			u"| |",
+			u"|-|"
+		},
+		{
+			u"-- ",
+			u"| -",
+			u"-- ",
+		},
+		{
+			u"|-|",
+			u"| |",
+			u" | ",
+		},
+		{
+			u" --",
+			u"- |",
+			u" --",
+		},
+		{
+			u"|-|",
+			u"|=|",
+			u"|-|",
+		}
+	};
+};
+
+
+
+class Enemy : public Character
 {
 
 };
 
+
+// --------------   BULLET  ----------------
 
 
 class Bullet : public DynamicObject
@@ -130,14 +184,8 @@ class Bullet : public DynamicObject
 
 
 
-// --------------- STATIC OBJECTS -------------------
 
-
-
-class StaticObject : public GameObject 
-{
-
-};
+//          --- STATIC OBJECTS ---
 
 
 

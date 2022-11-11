@@ -9,8 +9,21 @@ private:
     char16_t prevBuf[ROWS][COLS];
     char coord[100];
 
-    bool worldIsRun = true, win = false, singlePlayer = true;
+    bool worldIsRun = true, win = false, singlePlayer = true, exit = false;
     int score = 0;
+    
+    // --------- CONNECTION SETTINGS ---------
+
+    bool create = false, joinS = false;
+
+    string ipAdd;
+
+    struct PacketData {
+        int x;
+        int y;
+    };
+
+    // - - - - - - - - - - - - - - - - - - - -
 
     HINSTANCE hInstance;
 
@@ -119,6 +132,9 @@ private:
     VirtualTerminal term; // console setting
 
     vector<GameObject*> allObjectList;
+    vector<Player*> playerList;
+
+    Player* player;
 
 protected:
 
@@ -132,13 +148,15 @@ protected:
 
     void DrawToMem();
 
-    void HotKeys(bool& pause);
-
     void DrawEndInfo(bool& restart);
 
     void DrawInfo();
 
     void DrawChanges();
+
+    void SetGridState();
+
+    void Loading();
 
 public:
 

@@ -43,32 +43,107 @@ void Game::DrawArea()
 
 void Game::MainMenu()
 {
-	Sleep(100);
-	int mX = COLS/2 - 3, mY = ROWS/2, SP = ROWS/2, MP = ROWS/2 + 2;
+	int mX = COLS / 2 - 3, startPosY = ROWS / 2, endPosY = startPosY + 4;
+	int mY = startPosY;
+	bool choose = false;
+	do
+	{
+		SetPos(COLS / 2, startPosY);
+		cout << "SINGLEPLAYER";
+		SetPos(COLS / 2, startPosY + 2);
+		cout << "MULTIPLAYER";
+		SetPos(COLS / 2 + 4, startPosY + 4);
+		cout << "EXIT";
+		Sleep(250);
+		while (true) {
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+				if (mY == startPosY) {
+					choose = true;
+					singlePlayer = true;
+				}
+				else if (mY == startPosY + 2) singlePlayer = false;
+				else if (mY == startPosY + 4) {
+					worldIsRun = false;
+					exit = true;
 
-	SetPos(COLS / 2, ROWS / 2);
-	cout << "SINGLEPLAYER";
-	SetPos(COLS / 2, ROWS / 2 + 2);
-	cout << "MULTIPLAYER";
-	while (true) {
-		if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
-			if (mY == SP) singlePlayer = true;
-			else singlePlayer = false;
-			break;
+					SetPos(mX, startPosY);
+					cout << "                    ";
+					SetPos(mX, startPosY + 2);
+					cout << "                    ";
+					SetPos(mX, startPosY + 4);
+					cout << "                    ";
+
+					return;
+				}
+				break;
+			}
+			SetPos(mX, mY);
+			cout << "  ";
+			if ((GetAsyncKeyState(VK_UP) & 0x8000) && mY > startPosY) mY -= 2;
+			if ((GetAsyncKeyState(VK_DOWN) & 0x8000) && mY < endPosY) mY += 2;
+			SetPos(mX, mY);
+			cout << "->";
+			Sleep(60);
 		}
-		SetPos(mX, mY);
-		cout << "  ";
-		if (GetAsyncKeyState(VK_UP) & 0x8000) mY = SP;
-		if (GetAsyncKeyState(VK_DOWN) & 0x8000) mY = MP;
-		SetPos(mX, mY);
-		cout << "->";
-		Sleep(10);
-	}
+		SetPos(mX, startPosY);
+		cout << "                    ";
+		SetPos(mX, startPosY + 2);
+		cout << "                    ";
+		SetPos(mX, startPosY + 4);
+		cout << "                    ";
+		Sleep(250);
+		if (!singlePlayer) {
+			SetPos(COLS / 2, startPosY);
+			cout << "CREATE SERVER";
+			SetPos(COLS / 2 + 1, startPosY + 2);
+			cout << "JOIN SERVER";
+			SetPos(COLS / 2 + 4, startPosY + 4);
+			cout << "BACK";
 
-	SetPos(mX, SP);
-	cout << "                    ";
-	SetPos(mX, MP);
-	cout << "                    ";
+			while (true) {
+				if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+					if (mY == startPosY) {
+						choose = true;
+						create = true;
+					}
+					else if (mY == startPosY + 2) {
+						joinS = true;
+						choose = true;
+
+						SetPos(mX, startPosY);
+						cout << "                    ";
+						SetPos(mX, startPosY + 2);
+						cout << "                    ";
+						SetPos(mX, startPosY + 4);
+						cout << "                    ";
+
+						Sleep(100);
+
+						SetPos(COLS / 2 - 10, ROWS / 2);
+						cout << "ENTER IP: ";
+						FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+						cin >> ipAdd;
+						SetPos(COLS / 2 - 10, ROWS / 2);
+						cout << "          ";
+					}
+					break;
+				}
+				SetPos(mX, mY);
+				cout << "  ";
+				if ((GetAsyncKeyState(VK_UP) & 0x8000) && mY > startPosY) mY -= 2;
+				if ((GetAsyncKeyState(VK_DOWN) & 0x8000) && mY < endPosY) mY += 2;
+				SetPos(mX, mY);
+				cout << "->";
+				Sleep(60);
+			}
+		}
+		SetPos(mX, startPosY);
+		cout << "                    ";
+		SetPos(mX, startPosY + 2);
+		cout << "                    ";
+		SetPos(mX, startPosY + 4);
+		cout << "                    ";
+	} while (!choose);
 }
 
 void Game::CreateWorld() {
@@ -87,28 +162,21 @@ void Game::CreateWorld() {
 void Game::DrawEndInfo(bool& restart)
 {
 	if (win) {
-		SetPos(COLS / 2 - 1, 20);
+		SetPos(COLS / 3 + 3, 24);
 		cout << "CONGRATULATION! YOU WIN!";
 	}
 	else {
-		SetPos(COLS / 2 + 6, 20);
+		SetPos(COLS / 3 + 12, 24);
 		cout << "GAME OVER!";
 	}
-
-	SetPos(COLS / 2, 23);
-	cout << "PRESS ENTER TO RESTART";
-	SetPos(COLS / 2 + 2, 24);
+	SetPos(COLS / 3 + 8, 28);
 	cout << "PRESS ESC TO EXIT";
 
 	bool pressed = false;
 	restart = false;
 
 	while (!pressed) {
-		if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
-			restart = true;
-			pressed = true;
-		}
-		else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
 			restart = false;
 			pressed = true;
 		}
@@ -178,6 +246,28 @@ void Game::DrawChanges()
 	}
 }
 
+void Game::SetGridState()
+{
+	for (int i = 0; i < ROWS; i++)
+	{
+		for (int j = 0; j < COLS; j++)
+		{
+			if (i < 2 || i >= ROWS - 1 || j < 2 || j > COLS) {
+				wData.grid[i][j] = 99;
+				continue;
+			}	
+			wData.grid[i][j] = 0;
+		}
+	}
+}
+
+void Game::Loading()
+{
+	SetGridState();
+
+	Sleep(100);
+}
+
 void Game::DrawToMem()
 {
 	for (int i = 0; i < allObjectList.size(); i++)
@@ -193,14 +283,27 @@ void Game::RunWorld(bool& restart)
 
 	int tick = 0;
 
+	player = new Player(&wData, COLS / 2 - 6, ROWS - 4, BrCyan, 0);
+	allObjectList.push_back(player);
+	playerList.push_back(player);
+
+	Loading();
+
 	if (singlePlayer) {
 		while (worldIsRun) {
+
+			for (int i = 0; i < playerList.size(); i++)
+			{
+				if (tick % playerList[i]->GetSpeed() == 0) {
+					playerList[i]->MoveObject();
+				}
+			}
 
 			DrawToMem();
 
 			DrawChanges();
 
-			Sleep(60);
+			Sleep(15);
 
 			tick++;
 		}
