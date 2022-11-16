@@ -26,7 +26,6 @@ public:
 	void SetY(int y);
 
 
-
 	virtual void DrawObject() = 0;
 
 	virtual void EraseObject() = 0;
@@ -36,7 +35,7 @@ public:
 
 protected:
 
-	int _x, _y, _color, _speed, _width, _height;
+	int _x, _y, _color, _speed, _width, _height, _id;
 	bool _deleteObject = false;
 
 	wd* wData;
@@ -51,8 +50,13 @@ protected:
 
 
 
-// - - - - - - - - - - OBJECTS TYPE - - - - - - - - - -
+// - - - - - - - - - - - -
 
+class Bullet;
+class Wall;
+class Bonus;
+
+// - - - - - - - - - - OBJECTS TYPE - - - - - - - - - -
 
 
 class DynamicObject : public GameObject 
@@ -69,6 +73,9 @@ public:
 
 
 	int GetDirection();
+
+	void SetDirection(int dir);
+
 
 protected:
 
@@ -96,7 +103,12 @@ public:
 
 	Character(wd* wData, int x, int y, int color, int speed) : DynamicObject(wData, x, y, color, speed) {
 		_speed = 3;
+		_width = 3;
+		_height = 3;
 	}
+
+
+	void Shot(vector <GameObject*> &allObjList, vector <Bullet*> &bulletList, Bullet* bullet, int ownerID, int ownerType);
 
 
 	void SetType(int type);
@@ -106,14 +118,23 @@ public:
 
 	int GetHp();
 
+
 	int GetGunType();
+
+	void ReloadGun();
+
+
+	void SetID(int id);
+
+	int GetID();
 
 
 	void Hit();
 
+
 protected:
 
-	int _type = REGULAR, _gunType = SINGLESHOT, _hp = 25;
+	int _type = REGULAR, _gunType = FASTSHOT, _hp = 25, _ammo = 1;
 
 	void Death();
 
@@ -132,6 +153,10 @@ public:
 	void EraseObject() override;
 
 	void MoveObject() override;
+
+
+
+
 
 private:
 
@@ -164,6 +189,60 @@ private:
 			u"|-|",
 		}
 	};
+	char16_t midSprite[5][3][4]{
+		{
+			u" | ",
+			u"|-|",
+			u"|-|"
+		},
+		{
+			u"-- ",
+			u"||-",
+			u"-- "
+		},
+		{
+			u"|-|",
+			u"|-|",
+			u" | ",
+		},
+		{
+			u" --",
+			u"-||",
+			u" --"
+		},
+		{
+			u"|-|",
+			u"|=|",
+			u"|-|",
+		}
+	};
+	char16_t armoredSprite[5][3][4]{
+		{
+			u" | ",
+			u"#-#",
+			u"#-#"
+		},
+		{
+			u"## ",
+			u"||-",
+			u"## "
+		},
+		{
+			u"#-#",
+			u"#-#",
+			u" | ",
+		},
+		{
+			u" ##",
+			u"-||",
+			u" ##"
+		},
+		{
+			u"#-#",
+			u"#=#",
+			u"#-#",
+		}
+	};
 };
 
 
@@ -179,6 +258,32 @@ class Enemy : public Character
 
 class Bullet : public DynamicObject
 {
+public:
+
+	Bullet(wd* wData, int x, int y, int color, int speed) : DynamicObject(wData, x, y, color, speed) {}
+
+	void DrawObject() override;
+
+	void EraseObject() override;
+
+	void MoveObject() override;
+
+	
+	void SetBulletPower(int power);
+
+	int GetBulletPower();
+
+
+	void SetOwner(int ownerID, int ownerType);
+
+	int GetOwner();
+
+
+private:
+
+	void Trajectory();
+
+	int _power = STANDART, _ownerID, _ownerType;
 
 };
 

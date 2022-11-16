@@ -57,3 +57,13 @@ enum WallType {
 	STEEL,
 	ICE
 };
+
+enum BulletPower {
+	STANDART = 25,
+	HIGH = 50
+};
+
+enum BulletOwner {
+	PLAYER,
+	ENEMY
+};

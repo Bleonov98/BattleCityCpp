@@ -132,9 +132,13 @@ private:
     VirtualTerminal term; // console setting
 
     vector<GameObject*> allObjectList;
+    vector<Character*> characterList;
     vector<Player*> playerList;
+    vector<Bullet*> bulletList;
 
+    Character* character;
     Player* player;
+    Bullet* bullet;
 
 protected:
 
@@ -156,7 +160,11 @@ protected:
 
     void SetGridState();
 
+    void Preparing();
+
     void Loading();
+
+    void SpawnPlayer(int &objID);
 
 public:
 

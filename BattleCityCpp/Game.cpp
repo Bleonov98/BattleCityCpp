@@ -157,6 +157,7 @@ void Game::CreateWorld() {
 
 	DrawArea();
 	MainMenu();
+	Preparing();
 }
 
 void Game::DrawEndInfo(bool& restart)
@@ -261,6 +262,11 @@ void Game::SetGridState()
 	}
 }
 
+void Game::Preparing()
+{
+	characterList.resize(50);
+}
+
 void Game::Loading()
 {
 	SetGridState();
@@ -268,8 +274,38 @@ void Game::Loading()
 	Sleep(100);
 }
 
+void Game::SpawnPlayer(int& objectID)
+{
+	player = new Player(&wData, COLS / 2 - 6, ROWS - 4, BrCyan, 0);
+
+	allObjectList.push_back(player);
+	playerList.push_back(player);
+
+	characterList[objectID] = player;
+	player->SetID(objectID);
+	objectID++;
+}
+
 void Game::DrawToMem()
 {
+	for (int i = 0; i < bulletList.size(); i++)
+	{
+		if (bulletList[i]->IsObjectDelete()) {
+			characterList[bulletList[i]->GetOwner()]->ReloadGun();
+
+			bulletList.erase(bulletList.begin() + i);
+			i = -1;
+		}
+	}
+
+	for (int i = 0; i < allObjectList.size(); i++)
+	{
+		if (allObjectList[i]->IsObjectDelete()) {
+			allObjectList.erase(allObjectList.begin() + i);
+			i = -1;
+		}
+	}
+
 	for (int i = 0; i < allObjectList.size(); i++)
 	{
 		allObjectList[i]->DrawObject();
@@ -281,11 +317,9 @@ void Game::RunWorld(bool& restart)
 	srand(time(NULL));
 	CreateWorld();
 
-	int tick = 0;
+	int tick = 0, charID = 0;
 
-	player = new Player(&wData, COLS / 2 - 6, ROWS - 4, BrCyan, 0);
-	allObjectList.push_back(player);
-	playerList.push_back(player);
+	SpawnPlayer(charID);
 
 	Loading();
 
@@ -295,7 +329,20 @@ void Game::RunWorld(bool& restart)
 			for (int i = 0; i < playerList.size(); i++)
 			{
 				if (tick % playerList[i]->GetSpeed() == 0) {
+
 					playerList[i]->MoveObject();
+
+					if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+						playerList[i]->Shot(allObjectList, bulletList, bullet, player->GetID(), PLAYER);
+					}
+
+				}
+			}
+
+			for (int i = 0; i < bulletList.size(); i++)
+			{
+				if (tick % bulletList[i]->GetSpeed() == 0) {
+					bulletList[i]->MoveObject();
 				}
 			}
 
