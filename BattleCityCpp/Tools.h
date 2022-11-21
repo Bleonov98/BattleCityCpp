@@ -45,17 +45,18 @@ enum GunType {
 
 enum BonusType {
 	STAR,
-	KILL,
+	BOMB,
 	HELMET,
 	TIME
 };
 
 enum WallType {
-	BRICK,
-	WATER,
-	GRASS,
-	STEEL,
-	ICE
+	BRICK = 1,
+	WATER = 2,
+	GRASS = 3,
+	STEEL = 4,
+	ICE = 5,
+	BASE = 6
 };
 
 enum BulletPower {

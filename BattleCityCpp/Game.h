@@ -131,14 +131,16 @@ private:
 
     VirtualTerminal term; // console setting
 
-    vector<GameObject*> allObjectList;
-    vector<Character*> characterList;
-    vector<Player*> playerList;
-    vector<Bullet*> bulletList;
+    vector <GameObject*> allObjectList;
+    vector <Character*> characterList;
+    vector <Player*> playerList;
+    vector <Bullet*> bulletList;
+    vector <Wall*> wallList;
 
     Character* character;
     Player* player;
     Bullet* bullet;
+    Wall* wall;
 
 protected:
 
@@ -162,9 +164,9 @@ protected:
 
     void Preparing();
 
-    void Loading();
+    void SpawnPlayer(int &objectID, int x, int y, int color);
 
-    void SpawnPlayer(int &objID);
+    void CreateMap();
 
 public:
 

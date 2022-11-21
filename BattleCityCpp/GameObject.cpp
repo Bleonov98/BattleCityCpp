@@ -68,7 +68,7 @@ void DynamicObject::CheckNextStep()
 
 // - - - - - - - - - - - - - - -  CHARACTERS - - - - - - - - - - - - - - - -
 
-void Character::Shot(vector <GameObject*>& allObjList, vector <Bullet*>& bulletList, Bullet* bullet, int ownerID, int ownerType)
+void Character::Shot(vector <GameObject*>& allObjList, vector <Bullet*>& bulletList, Bullet* bullet, int ownerType)
 {
 	if (_ammo == 0) {
 		return;
@@ -76,25 +76,27 @@ void Character::Shot(vector <GameObject*>& allObjList, vector <Bullet*>& bulletL
 	_ammo--;
 
 	if (_gunType == SINGLESHOT) {
-		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red, 2);
+		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red);
 		bullet->SetDirection(_dir);
+		bullet->SetBulletPower(STANDART, 2);
 		allObjList.push_back(bullet);
 		bulletList.push_back(bullet);
 	}
 	else if (_gunType >= FASTSHOT) {
-		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red, 1);
+		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red);
 		bullet->SetDirection(_dir);
+		bullet->SetBulletPower(STANDART, 1);
 		allObjList.push_back(bullet);
 		bulletList.push_back(bullet);
 	}
 	else if (_gunType == STRONGSHOT) {
-		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red, 1);
+		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red);
 		bullet->SetDirection(_dir);
-		bullet->SetBulletPower(HIGH);
+		bullet->SetBulletPower(HIGH, 1);
 		allObjList.push_back(bullet);
 		bulletList.push_back(bullet);
 	}
-	bullet->SetOwner(ownerID, ownerType);
+	bullet->SetOwner(GetID(), ownerType);
 }
 
 void Character::SetType(int type)
@@ -219,6 +221,14 @@ void Player::MoveObject()
 	Control();
 }
 
+void Player::PowerUP()
+{
+	if (_gunType < STRONGSHOT) _gunType++;
+	if (_type < ARMORED) _type++;
+
+	if (_gunType == DOUBLESHOT) _ammo++;
+}
+
 // ------------- BULLET ----------
 
 void Bullet::DrawObject() 
@@ -237,9 +247,10 @@ void Bullet::MoveObject()
 	Trajectory();
 }
 
-void Bullet::SetBulletPower(int power)
+void Bullet::SetBulletPower(int power, int speed)
 {
 	_power = power;
+	_speed = speed;
 }
 
 int Bullet::GetBulletPower()
@@ -269,3 +280,79 @@ void Bullet::Trajectory()
 
 	CheckNextStep();
 }
+
+
+// -------------- WALL -----------------
+
+
+void Wall::DrawObject()
+{
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			wData->vBuf[_y + i][_x + j] = u'#' | (_color << 8);
+		}
+	}
+}
+
+void Wall::EraseObject()
+{
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			wData->vBuf[_y + i][_x + j] = u' ';
+		}
+	}
+}
+
+void Wall::ChangeWallPos()
+{
+	if (GetAsyncKeyState(VK_UP) & 0x8000) _y--;
+	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) _x++;
+	else if (GetAsyncKeyState(VK_DOWN) & 0x8000) _y++;
+	else if (GetAsyncKeyState(VK_LEFT) & 0x8000) _x--;
+	else if (GetAsyncKeyState(VK_SPACE) & 0x8000) ChangeWallType();
+}
+
+void Wall::ChangeWallType()
+{
+	_type++;
+	if (_type > BASE) _type = BRICK;
+
+	if (_type == BRICK) _color = BrRed;
+	else if (_type == WATER) _color = Blue;
+	else if (_type == GRASS) _color = BrGreen;
+	else if (_type == STEEL) _color = White;
+	else if (_type == ICE) _color = BrCyan;
+	else if (_type == BASE) _color = Yellow;
+}
+
+bool Wall::SetWallPos()
+{
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			if (wData->grid[_y + i][_x + j] != 0) return false;
+		}
+	}
+
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			wData->grid[_y + i][_x + j] = _type;
+		}
+	}
+
+	return true;
+}
+
+int Wall::GetWallType()
+{
+	return _type;
+}
+
+

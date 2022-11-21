@@ -4,9 +4,9 @@
 class GameObject
 {
 public:
-	GameObject(wd* wData, int x, int y, int color, int speed) {
+	GameObject(wd* wData, int x, int y, int color) {
 		this->wData = wData;
-		_x = x, _y = y, _speed = speed, _color = color;
+		_x = x, _y = y, _color = color;
 	}
 
 	int GetX();
@@ -35,7 +35,7 @@ public:
 
 protected:
 
-	int _x, _y, _color, _speed, _width, _height, _id;
+	int _x, _y, _color, _speed = 3, _width, _height, _id;
 	bool _deleteObject = false;
 
 	wd* wData;
@@ -62,7 +62,7 @@ class Bonus;
 class DynamicObject : public GameObject 
 {
 public:
-	DynamicObject(wd* wData, int x, int y, int color, int speed) : GameObject(wData, x, y, color, speed) {}
+	DynamicObject(wd* wData, int x, int y, int color) : GameObject(wData, x, y, color) {}
 
 
 	virtual void DrawObject() = 0;
@@ -85,13 +85,6 @@ protected:
 };
 
 
-
-class StaticObject : public GameObject
-{
-
-};
-
-
 //          --- DYNAMIC OBJECTS ---
 // ----------------- CHAR -----------------------
 
@@ -101,14 +94,13 @@ class Character: public DynamicObject
 {
 public:
 
-	Character(wd* wData, int x, int y, int color, int speed) : DynamicObject(wData, x, y, color, speed) {
-		_speed = 3;
+	Character(wd* wData, int x, int y, int color) : DynamicObject(wData, x, y, color) {
 		_width = 3;
 		_height = 3;
 	}
 
 
-	void Shot(vector <GameObject*> &allObjList, vector <Bullet*> &bulletList, Bullet* bullet, int ownerID, int ownerType);
+	void Shot(vector <GameObject*> &allObjList, vector <Bullet*> &bulletList, Bullet* bullet, int ownerType);
 
 
 	void SetType(int type);
@@ -134,7 +126,7 @@ public:
 
 protected:
 
-	int _type = REGULAR, _gunType = FASTSHOT, _hp = 25, _ammo = 1;
+	int _type = REGULAR, _gunType = SINGLESHOT, _hp = 25, _ammo = 1;
 
 	void Death();
 
@@ -146,7 +138,7 @@ class Player : public Character
 {
 public:
 
-	Player(wd* wData, int x, int y, int color, int speed) : Character(wData, x, y, color, speed) {}
+	Player(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {}
 
 	void DrawObject() override;
 
@@ -155,7 +147,7 @@ public:
 	void MoveObject() override;
 
 
-
+	void PowerUP();
 
 
 private:
@@ -260,7 +252,7 @@ class Bullet : public DynamicObject
 {
 public:
 
-	Bullet(wd* wData, int x, int y, int color, int speed) : DynamicObject(wData, x, y, color, speed) {}
+	Bullet(wd* wData, int x, int y, int color) : DynamicObject(wData, x, y, color) {}
 
 	void DrawObject() override;
 
@@ -269,7 +261,7 @@ public:
 	void MoveObject() override;
 
 	
-	void SetBulletPower(int power);
+	void SetBulletPower(int power, int speed);
 
 	int GetBulletPower();
 
@@ -294,14 +286,41 @@ private:
 
 
 
-class Wall : public StaticObject 
+class Wall : public GameObject
 {
+public:
+
+	Wall(wd* wData, int x, int y, int color) : GameObject(wData, x, y, color) {
+		_height = 4;
+		_width = 4;
+	}
+
+	void DrawObject();
+
+	void EraseObject();
+
+
+	void ChangeWallPos();
+
+	void ChangeWallType();
+
+
+	bool SetWallPos();
+
+	int GetWallType();
+
+
+	
+
+
+private:
+
+	int _type = BRICK;
 
 };
 
 
-
-class Bonus : public StaticObject 
+class Bonus : public GameObject 
 {
 
 };

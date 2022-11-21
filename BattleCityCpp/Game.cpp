@@ -235,7 +235,7 @@ void Game::DrawChanges()
 					printf(CSI "22;93m");
 				}
 				else if ((prevBuf[y][x] >> 8) == White) {
-					printf(CSI "47;37m");
+					printf(CSI "22;37m");
 				}
 				else printf(CSI "22; 44m");
 
@@ -264,19 +264,17 @@ void Game::SetGridState()
 
 void Game::Preparing()
 {
-	characterList.resize(50);
-}
-
-void Game::Loading()
-{
 	SetGridState();
+	CreateMap();
+
+	characterList.resize(50);
 
 	Sleep(100);
 }
 
-void Game::SpawnPlayer(int& objectID)
+void Game::SpawnPlayer(int& objectID, int x, int y, int color)
 {
-	player = new Player(&wData, COLS / 2 - 6, ROWS - 4, BrCyan, 0);
+	player = new Player(&wData, x, y, color);
 
 	allObjectList.push_back(player);
 	playerList.push_back(player);
@@ -284,6 +282,39 @@ void Game::SpawnPlayer(int& objectID)
 	characterList[objectID] = player;
 	player->SetID(objectID);
 	objectID++;
+}
+
+void Game::CreateMap()
+{
+	wall = new Wall(&wData, COLS / 2, ROWS / 2, BrRed);
+
+	while (true)
+	{
+		wall->EraseObject();
+		wall->ChangeWallPos();
+		wall->DrawObject();
+
+		for (int i = 0; i < wallList.size(); i++)
+		{
+			wallList[i]->DrawObject();
+		}
+
+		DrawChanges();
+
+		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+			wall->EraseObject();
+			break;
+		}
+
+		if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+			if (wall->SetWallPos()) {
+				wallList.push_back(wall);
+				wall = new Wall(&wData, COLS / 2, ROWS / 2, BrRed);
+			}
+		}
+
+		Sleep(100);
+	}
 }
 
 void Game::DrawToMem()
@@ -310,6 +341,11 @@ void Game::DrawToMem()
 	{
 		allObjectList[i]->DrawObject();
 	}
+
+	for (int i = 0; i < wallList.size(); i++)
+	{
+		if (wallList[i]->GetWallType() == ICE || wallList[i]->GetWallType() == GRASS) wallList[i]->DrawObject();
+	}
 }
 
 void Game::RunWorld(bool& restart)
@@ -319,9 +355,13 @@ void Game::RunWorld(bool& restart)
 
 	int tick = 0, charID = 0;
 
-	SpawnPlayer(charID);
+	SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
+	SpawnPlayer(charID, COLS / 2 + 15, ROWS - 4, Green);
 
-	Loading();
+	for (int i = 0; i < STRONGSHOT; i++)
+	{
+		playerList[0]->PowerUP();
+	}
 
 	if (singlePlayer) {
 		while (worldIsRun) {
@@ -333,7 +373,7 @@ void Game::RunWorld(bool& restart)
 					playerList[i]->MoveObject();
 
 					if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
-						playerList[i]->Shot(allObjectList, bulletList, bullet, player->GetID(), PLAYER);
+						playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
 					}
 
 				}
