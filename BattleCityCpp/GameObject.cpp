@@ -356,3 +356,66 @@ int Wall::GetWallType()
 }
 
 
+// ------------- BONUS -----------------
+
+
+void Bonus::DrawObject()
+{
+	if (_type == STAR) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = starBonus[i][j] | (_color << 8);
+			}
+		}
+	}
+	else if (_type == BOMB) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = bombBonus[i][j] | (_color << 8);
+			}
+		}
+	}
+	else if (_type == HELMET) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = helmetBonus[i][j] | (_color << 8);
+			}
+		}
+	}
+	else if (_type == TIME) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = timeBonus[i][j] | (_color << 8);
+			}
+		}
+	}
+}
+
+void Bonus::EraseObject()
+{
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			wData->vBuf[_y + i][_x + j] = u' ';
+		}
+	}
+}
+
+void Bonus::SetBonusType(int type)
+{
+	_type = type;
+}
+
+int Bonus::GetBonusType()
+{
+	return _type;
+}

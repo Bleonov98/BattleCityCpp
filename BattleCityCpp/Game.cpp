@@ -386,6 +386,13 @@ void Game::RunWorld(bool& restart)
 				}
 			}
 
+			if (tick % 1000 == 0) {
+				bonus = new Bonus(&wData, 2 + rand() % (COLS - 6), 2 + rand() % (ROWS - 5), BrYellow);
+				bonus->SetBonusType(rand() % TIME);
+				bonusList.push_back(bonus);
+				allObjectList.push_back(bonus);
+			}
+
 			DrawToMem();
 
 			DrawChanges();

@@ -62,12 +62,9 @@ class Bonus;
 class DynamicObject : public GameObject 
 {
 public:
+
 	DynamicObject(wd* wData, int x, int y, int color) : GameObject(wData, x, y, color) {}
 
-
-	virtual void DrawObject() = 0;
-
-	virtual void EraseObject() = 0;
 
 	virtual void MoveObject() = 0;
 
@@ -295,9 +292,9 @@ public:
 		_width = 4;
 	}
 
-	void DrawObject();
+	void DrawObject() override;
 
-	void EraseObject();
+	void EraseObject() override;
 
 
 	void ChangeWallPos();
@@ -322,5 +319,47 @@ private:
 
 class Bonus : public GameObject 
 {
+public:
+
+	Bonus(wd* wData, int x, int y, int color) : GameObject(wData, x, y, color) {
+		_height = 3;
+		_width = 3;
+	}
+
+
+	void DrawObject() override;
+
+	void EraseObject() override;
+
+
+	void SetBonusType(int type);
+
+	int GetBonusType();
+
+
+private:
+
+	char16_t starBonus[3][4]{
+		u"---",
+		u"|*|",
+		u"---"
+	};
+	char16_t bombBonus[3][4]{
+		u"---",
+		u"|#|",
+		u"---"
+	};
+	char16_t helmetBonus[3][4]{
+		u"---",
+		u"|@|",
+		u"---"
+	};
+	char16_t timeBonus[3][4]{
+		u"---",
+		u"|%|",
+		u"---"
+	};
+
+	int _type = STAR;
 
 };

@@ -136,11 +136,13 @@ private:
     vector <Player*> playerList;
     vector <Bullet*> bulletList;
     vector <Wall*> wallList;
+    vector <Bonus*> bonusList;
 
     Character* character;
     Player* player;
     Bullet* bullet;
     Wall* wall;
+    Bonus* bonus;
 
 protected:
 
