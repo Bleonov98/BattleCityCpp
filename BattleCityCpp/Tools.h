@@ -59,6 +59,12 @@ enum WallType {
 	BASE = 6
 };
 
+enum ObjectType {
+	CHARACTER,
+	BULLET,
+	BONUS
+};
+
 enum BulletPower {
 	STANDART = 25,
 	HIGH = 50

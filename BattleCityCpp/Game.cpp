@@ -186,65 +186,70 @@ void Game::DrawEndInfo(bool& restart)
 
 void Game::DrawChanges()
 {
-	for (int y = 0; y < ROWS; y++)
+	do
 	{
-		for (int x = 0; x < COLS; x++)
+		for (int y = 0; y < ROWS; y++)
 		{
-			if (prevBuf[y][x] == wData.vBuf[y][x]) {
-				continue;
-			}
-			else {
-				prevBuf[y][x] = wData.vBuf[y][x];
+			for (int x = 0; x < COLS; x++)
+			{
+				if (prevBuf[y][x] == wData.vBuf[y][x]) {
+					continue;
+				}
+				else {
+					prevBuf[y][x] = wData.vBuf[y][x];
 
-				SetPos(x, y);
+					SetPos(x, y);
 
-				if ((prevBuf[y][x] >> 8) == Red) {
-					printf(CSI "22;31m");
-				}
-				else if ((prevBuf[y][x] >> 8) == Green) {
-					printf(CSI "22;32m");
-				}
-				else if ((prevBuf[y][x] >> 8) == Blue) {
-					printf(CSI "22;34m");
-				}
-				else if ((prevBuf[y][x] >> 8) == Yellow) {
-					printf(CSI "22;33m");
-				}
-				else if ((prevBuf[y][x] >> 8) == Purple) {
-					printf(CSI "22;35m");
-				}
-				else if ((prevBuf[y][x] >> 8) == Cyan) {
-					printf(CSI "22;36m");
-				}
-				else if ((prevBuf[y][x] >> 8) == BrRed) {
-					printf(CSI "22;91m");
-				}
-				else if ((prevBuf[y][x] >> 8) == BrGreen) {
-					printf(CSI "22;92m");
-				}
-				else if ((prevBuf[y][x] >> 8) == BrBlue) {
-					printf(CSI "22;94m");
-				}
-				else if ((prevBuf[y][x] >> 8) == BrCyan) {
-					printf(CSI "22;96m");
-				}
-				else if ((prevBuf[y][x] >> 8) == BrPurple) {
-					printf(CSI "22;95m");
-				}
-				else if ((prevBuf[y][x] >> 8) == BrYellow) {
-					printf(CSI "22;93m");
-				}
-				else if ((prevBuf[y][x] >> 8) == White) {
-					printf(CSI "22;37m");
-				}
-				else printf(CSI "22; 44m");
+					if ((prevBuf[y][x] >> 8) == Red) {
+						printf(CSI "22;31m");
+					}
+					else if ((prevBuf[y][x] >> 8) == Green) {
+						printf(CSI "22;32m");
+					}
+					else if ((prevBuf[y][x] >> 8) == Blue) {
+						printf(CSI "22;34m");
+					}
+					else if ((prevBuf[y][x] >> 8) == Yellow) {
+						printf(CSI "22;33m");
+					}
+					else if ((prevBuf[y][x] >> 8) == Purple) {
+						printf(CSI "22;35m");
+					}
+					else if ((prevBuf[y][x] >> 8) == Cyan) {
+						printf(CSI "22;36m");
+					}
+					else if ((prevBuf[y][x] >> 8) == BrRed) {
+						printf(CSI "22;91m");
+					}
+					else if ((prevBuf[y][x] >> 8) == BrGreen) {
+						printf(CSI "22;92m");
+					}
+					else if ((prevBuf[y][x] >> 8) == BrBlue) {
+						printf(CSI "22;94m");
+					}
+					else if ((prevBuf[y][x] >> 8) == BrCyan) {
+						printf(CSI "22;96m");
+					}
+					else if ((prevBuf[y][x] >> 8) == BrPurple) {
+						printf(CSI "22;95m");
+					}
+					else if ((prevBuf[y][x] >> 8) == BrYellow) {
+						printf(CSI "22;93m");
+					}
+					else if ((prevBuf[y][x] >> 8) == White) {
+						printf(CSI "22;37m");
+					}
+					else printf(CSI "22; 44m");
 
-				cout << char(prevBuf[y][x]);
+					cout << char(prevBuf[y][x]);
 
-				printf(CSI "1;0m");
+					printf(CSI "1;0m");
+				}
 			}
 		}
-	}
+
+	} while (worldIsRun);
+	
 }
 
 void Game::SetGridState()
@@ -284,6 +289,77 @@ void Game::SpawnPlayer(int& objectID, int x, int y, int color)
 	objectID++;
 }
 
+void Game::BonusCollision()
+{
+	for (int i = 0; i < playerList.size(); i++)
+	{
+		for (int j = 0; j < bonusList.size(); j++)
+		{
+
+			for (int pHeight = 0; pHeight < playerList[i]->GetHeight(); pHeight++)
+			{
+				for (int pWidth = 0; pWidth < playerList[i]->GetWidth(); pWidth++)
+				{
+
+					for (int bHeight = 0; bHeight < bonusList[j]->GetHeight(); bHeight++)
+					{
+						for (int bWidth = 0; bWidth < bonusList[j]->GetWidth(); bWidth++)
+						{
+
+							if (playerList[i]->GetX() + pWidth == bonusList[j]->GetX() + bWidth
+								&& playerList[i]->GetY() + pHeight == bonusList[j]->GetY() + bHeight) {
+								playerList[i]->PickBonus(bonusList[j], enemyList);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void Game::WallCollision()
+{
+	for (int wall = 0; wall < wallList.size(); wall++)
+	{
+		if (wallList[wall]->GetWallType() == WATER || wallList[wall]->GetWallType() == GRASS || wallList[wall]->GetWallType() == ICE) continue;
+
+		for (int bullet = 0; bullet < bulletList.size(); bullet++)
+		{
+			for (int wlHeight = 0; wlHeight < wallList[wall]->GetHeight(); wlHeight++)
+			{
+				for (int wlWidth = 0; wlWidth < wallList[wall]->GetWidth(); wlWidth++)
+				{
+					if (wallList[wall]->GetY() + wlHeight == bulletList[bullet]->GetY() && wallList[wall]->GetX() + wlWidth == bulletList[bullet]->GetX()) {
+
+						if (wallList[wall]->GetWallType() == BASE) {
+							win = false;
+							worldIsRun = false;
+
+							wallList[wall]->DeleteObject();
+
+							return;
+						}
+
+						bulletList[bullet]->DeleteObject();
+						bulletList[bullet]->EraseObject();
+
+						wallList[wall]->DestroyWall(bulletList[bullet]->GetDirection(), bulletList[bullet]->GetBulletPower());
+					}
+				}
+			}
+		}
+
+	}
+}
+
+void Game::CheckCollision()
+{
+	BonusCollision();
+	WallCollision();
+}
+
 void Game::CreateMap()
 {
 	wall = new Wall(&wData, COLS / 2, ROWS / 2, BrRed);
@@ -319,6 +395,24 @@ void Game::CreateMap()
 
 void Game::DrawToMem()
 {
+	for (int i = 0; i < wallList.size(); i++)
+	{
+		wallList[i]->DrawObject();
+
+		if (wallList[i]->IsObjectDelete()) {
+			wallList.erase(wallList.begin() + i);
+			i = -1;
+		}
+	}
+
+	for (int i = 0; i < bonusList.size(); i++)
+	{
+		if (bonusList[i]->IsObjectDelete()) {
+			bonusList.erase(bonusList.begin() + i);
+			i = -1;
+		}
+	}
+
 	for (int i = 0; i < bulletList.size(); i++)
 	{
 		if (bulletList[i]->IsObjectDelete()) {
@@ -344,7 +438,7 @@ void Game::DrawToMem()
 
 	for (int i = 0; i < wallList.size(); i++)
 	{
-		if (wallList[i]->GetWallType() == ICE || wallList[i]->GetWallType() == GRASS) wallList[i]->DrawObject();
+		if (wallList[i]->GetWallType() == GRASS) wallList[i]->DrawObject();
 	}
 }
 
@@ -354,14 +448,15 @@ void Game::RunWorld(bool& restart)
 	CreateWorld();
 
 	int tick = 0, charID = 0;
+	worldIsRun = true;
+
+	thread drawing([&] {
+		DrawChanges();
+	});
+	drawing.detach();
 
 	SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
-	SpawnPlayer(charID, COLS / 2 + 15, ROWS - 4, Green);
-
-	for (int i = 0; i < STRONGSHOT; i++)
-	{
-		playerList[0]->PowerUP();
-	}
+	int playerTick = 0;
 
 	if (singlePlayer) {
 		while (worldIsRun) {
@@ -369,13 +464,15 @@ void Game::RunWorld(bool& restart)
 			for (int i = 0; i < playerList.size(); i++)
 			{
 				if (tick % playerList[i]->GetSpeed() == 0) {
+					playerTick++;
 
 					playerList[i]->MoveObject();
 
-					if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
-						playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
+					if (playerTick % playerList[i]->GetGunSpeed() == 0) {
+						if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+							playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
+						}
 					}
-
 				}
 			}
 
@@ -388,16 +485,17 @@ void Game::RunWorld(bool& restart)
 
 			if (tick % 1000 == 0) {
 				bonus = new Bonus(&wData, 2 + rand() % (COLS - 6), 2 + rand() % (ROWS - 5), BrYellow);
-				bonus->SetBonusType(rand() % TIME);
+				//bonus->SetBonusType(rand() % TIME);
+				bonus->SetBonusType(STAR);
 				bonusList.push_back(bonus);
 				allObjectList.push_back(bonus);
 			}
 
+			CheckCollision();
+
 			DrawToMem();
 
-			DrawChanges();
-
-			Sleep(15);
+			Sleep(20);
 
 			tick++;
 		}

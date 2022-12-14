@@ -25,11 +25,15 @@ public:
 
 	void SetY(int y);
 
+	void SetSpeed(int speed) { _speed = speed; };
+
 
 	virtual void DrawObject() = 0;
 
 	virtual void EraseObject() = 0;
 
+
+	void DeleteObject();
 
 	bool IsObjectDelete();
 
@@ -39,8 +43,6 @@ protected:
 	bool _deleteObject = false;
 
 	wd* wData;
-
-	void DeleteObject();
 
 	virtual ~GameObject() {
 		delete this;
@@ -63,7 +65,9 @@ class DynamicObject : public GameObject
 {
 public:
 
-	DynamicObject(wd* wData, int x, int y, int color) : GameObject(wData, x, y, color) {}
+	DynamicObject(wd* wData, int x, int y, int color) : GameObject(wData, x, y, color) {
+		_nativeSpeed = _speed;
+	}
 
 
 	virtual void MoveObject() = 0;
@@ -76,9 +80,9 @@ public:
 
 protected:
 
-	void CheckNextStep();
+	void CheckNextStep(int objType);
 
-	int _dir = UP;
+	int _dir = UP, _nativeSpeed;
 };
 
 
@@ -120,22 +124,28 @@ public:
 
 	void Hit();
 
+	void Death();
+
 
 protected:
 
 	int _type = REGULAR, _gunType = SINGLESHOT, _hp = 25, _ammo = 1;
 
-	void Death();
-
 };
 
 
+class Enemy : public Character
+{
+
+};
 
 class Player : public Character
 {
 public:
 
-	Player(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {}
+	Player(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {
+		nativeColor = color;
+	}
 
 	void DrawObject() override;
 
@@ -144,7 +154,23 @@ public:
 	void MoveObject() override;
 
 
+
+	// -- bonuses --
+
 	void PowerUP();
+
+	void GetArmor();
+
+	void PickBonus(Bonus* bonus, vector<Enemy*>& enemyList);
+
+	void DestroyEnemy(vector<Enemy*>& enemyList);
+
+	void FreezeEnemy(vector<Enemy*>& enemyList);
+
+	// -- -- -- -- --
+
+
+	int GetGunSpeed() { return gunSpeed; };
 
 
 private:
@@ -232,13 +258,9 @@ private:
 			u"#-#",
 		}
 	};
-};
 
-
-
-class Enemy : public Character
-{
-
+	int bonusTick = 0, nativeColor, gunSpeed = 2;
+	bool _armorBonus = true;
 };
 
 
@@ -249,7 +271,10 @@ class Bullet : public DynamicObject
 {
 public:
 
-	Bullet(wd* wData, int x, int y, int color) : DynamicObject(wData, x, y, color) {}
+	Bullet(wd* wData, int x, int y, int color) : DynamicObject(wData, x, y, color) {
+		_height = 1;
+		_width = 1;
+	}
 
 	void DrawObject() override;
 
@@ -306,14 +331,13 @@ public:
 
 	int GetWallType();
 
-
-	
-
+	void DestroyWall(int direction, int power);
 
 private:
 
-	int _type = BRICK;
+	int _type = BRICK, _side;
 
+	
 };
 
 

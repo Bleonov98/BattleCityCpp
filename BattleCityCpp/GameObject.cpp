@@ -1,5 +1,7 @@
 #include "GameObject.h"
 
+// ---------------------------------------------------------------------
+
 int GameObject::GetX()
 {
 	return _x;
@@ -48,6 +50,7 @@ bool GameObject::IsObjectDelete()
 
 // - - - - - - - - - - - - - DYNAMIC OBJECTS - - - - - - - - - - - - - - - -
 
+
 int DynamicObject::GetDirection()
 {
 	return _dir;
@@ -58,15 +61,29 @@ void DynamicObject::SetDirection(int dir)
 	_dir = dir;
 }
 
-void DynamicObject::CheckNextStep()
+void DynamicObject::CheckNextStep(int objType)
 {
-	if (_dir == UP && wData->grid[_y][_x] > 3) _y++;
-	else if (_dir == RIGHT && wData->grid[_y][_x + _width] > 3) _x--;
-	else if (_dir == BOT && wData->grid[_y + _height - 1][_x] > 3) _y--;
-	else if (_dir == LEFT && wData->grid[_y][_x] > 3) _x++;
-}
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			if (_dir == UP && (wData->grid[_y][_x + j] > BASE || wData->grid[_y][_x + j] == BRICK || wData->grid[_y][_x + j] == WATER || wData->grid[_y][_x + j] == STEEL
+				|| wData->grid[_y][_x + j] == BASE)) _y++;
+			else if (_dir == RIGHT && (wData->grid[_y + i][_x + _width - 1] > BASE || wData->grid[_y + i][_x + _width - 1] == BRICK || wData->grid[_y + i][_x + _width - 1] == WATER
+				|| wData->grid[_y + i][_x + _width - 1] == STEEL || wData->grid[_y + i][_x + _width - 1] == BASE)) _x--;
+			else if (_dir == BOT && (wData->grid[_y + _height - 1][_x + j] > BASE || wData->grid[_y + _height - 1][_x + j] == BRICK || wData->grid[_y + _height - 1][_x + j] == WATER
+				|| wData->grid[_y + _height - 1][_x + j] == STEEL || wData->grid[_y + _height - 1][_x + j] == BASE)) _y--;
+			else if (_dir == LEFT && (wData->grid[_y + i][_x] > BASE || wData->grid[_y + i][_x] == BRICK || wData->grid[_y + i][_x] == WATER || wData->grid[_y + i][_x] == STEEL
+				|| wData->grid[_y + i][_x] == BASE)) _x++;
+			/*else if (wData->grid[_y + i][_x + j] != ICE) _speed = _nativeSpeed;
+			else if (wData->grid[_y + i][_x + j] == ICE) _speed = 6;*/
+		}
+	}
+}   
+
 
 // - - - - - - - - - - - - - - -  CHARACTERS - - - - - - - - - - - - - - - -
+
 
 void Character::Shot(vector <GameObject*>& allObjList, vector <Bullet*>& bulletList, Bullet* bullet, int ownerType)
 {
@@ -75,21 +92,21 @@ void Character::Shot(vector <GameObject*>& allObjList, vector <Bullet*>& bulletL
 	}
 	_ammo--;
 
-	if (_gunType == SINGLESHOT) {
+	if (_gunType <= SINGLESHOT) {
 		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red);
 		bullet->SetDirection(_dir);
 		bullet->SetBulletPower(STANDART, 2);
 		allObjList.push_back(bullet);
 		bulletList.push_back(bullet);
 	}
-	else if (_gunType >= FASTSHOT) {
+	else if (_gunType >= FASTSHOT && _gunType < STRONGSHOT) {
 		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red);
 		bullet->SetDirection(_dir);
 		bullet->SetBulletPower(STANDART, 1);
 		allObjList.push_back(bullet);
 		bulletList.push_back(bullet);
 	}
-	else if (_gunType == STRONGSHOT) {
+	else if (_gunType >= STRONGSHOT) {
 		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red);
 		bullet->SetDirection(_dir);
 		bullet->SetBulletPower(HIGH, 1);
@@ -180,7 +197,14 @@ void Player::DrawObject()
 			}
 		}
 	}
-	
+
+
+	if (_armorBonus) {
+		if (bonusTick % 10 == 0) _color = Yellow;
+		else if (bonusTick % 5 == 0) _color = nativeColor;
+		
+		bonusTick++;
+	}
 }
 
 void Player::EraseObject()
@@ -212,7 +236,7 @@ void Player::Control()
 		_dir = LEFT;
 		_x--;
 	}
-	CheckNextStep();
+	CheckNextStep(CHARACTER);
 }
 
 void Player::MoveObject()
@@ -227,6 +251,39 @@ void Player::PowerUP()
 	if (_type < ARMORED) _type++;
 
 	if (_gunType == DOUBLESHOT) _ammo++;
+}
+
+void Player::GetArmor()
+{
+	_hp += 25;
+	_armorBonus = true;
+}
+
+void Player::PickBonus(Bonus* bonus, vector<Enemy*>& enemyList)
+{
+	if (bonus->GetBonusType() == STAR) PowerUP();
+	else if (bonus->GetBonusType() == BOMB) DestroyEnemy(enemyList);
+	else if (bonus->GetBonusType() == HELMET) GetArmor();
+	else if (bonus->GetBonusType() == TIME) FreezeEnemy(enemyList);
+
+	bonus->DeleteObject();
+	bonus->EraseObject();
+}
+
+void Player::DestroyEnemy(vector<Enemy*>& enemyList)
+{
+	for (int i = 0; i < enemyList.size(); i++)
+	{
+		enemyList[i]->Death();
+	}
+}
+
+void Player::FreezeEnemy(vector<Enemy*>& enemyList)
+{
+	for (int i = 0; i < enemyList.size(); i++)
+	{
+		enemyList[i]->SetSpeed(99999);
+	}
 }
 
 // ------------- BULLET ----------
@@ -277,8 +334,6 @@ void Bullet::Trajectory()
 	else if (_dir == LEFT) _x--;
 
 	if (_x <= 1 || _x >= COLS - 1 || _y >= ROWS - 1 || _y <= 1) DeleteObject();
-
-	CheckNextStep();
 }
 
 
@@ -355,6 +410,68 @@ int Wall::GetWallType()
 	return _type;
 }
 
+void Wall::DestroyWall(int direction, int power)
+{
+	if (direction == UP) _side = BOT;
+	else if (direction == BOT) _side = UP;
+	else if (direction == RIGHT) _side = LEFT;
+	else if (direction == LEFT) _side = RIGHT;
+
+	int damageSize = 0;
+	if (_type == BRICK) {
+		if (power == STANDART) damageSize = 1;
+		else damageSize = 2;
+	}
+	else {
+		if (power == STANDART) return;
+		else damageSize = 1;
+	}
+
+	for (int size = 0; size < damageSize; size++)
+	{
+		if (_side == BOT) {
+			_height--;
+
+			for (int i = 0; i < _width; i++)
+			{
+				wData->grid[_y + _height][_x + i] = 0;
+				wData->vBuf[_y + _height][_x + i] = u' ';
+			}
+		}
+		else if (_side == UP) {
+			_height--;
+
+			for (int i = 0; i < _width; i++)
+			{
+				wData->grid[_y][_x + i] = 0;
+				wData->vBuf[_y][_x + i] = u' ';
+			}
+			_y++;
+		}
+		else if (_side == RIGHT) {
+			_width--;
+
+			for (int i = 0; i < _height; i++)
+			{
+				wData->grid[_y + i][_x + _width] = 0;
+				wData->vBuf[_y + i][_x + _width] = u' ';
+			}
+		}
+		else if (_side == LEFT) {
+			_width--;
+
+			for (int i = 0; i < _height; i++)
+			{
+				wData->grid[_y + i][_x] = 0;
+				wData->vBuf[_y + i][_x] = u' ';
+			}
+			_x++;
+		}
+	}
+
+
+	if (_height == 0 || _width == 0) DeleteObject();
+}
 
 // ------------- BONUS -----------------
 

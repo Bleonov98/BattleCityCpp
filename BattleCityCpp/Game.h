@@ -9,7 +9,7 @@ private:
     char16_t prevBuf[ROWS][COLS];
     char coord[100];
 
-    bool worldIsRun = true, win = false, singlePlayer = true, exit = false;
+    bool worldIsRun = false, win = false, singlePlayer = true, exit = false;
     int score = 0;
     
     // --------- CONNECTION SETTINGS ---------
@@ -137,12 +137,14 @@ private:
     vector <Bullet*> bulletList;
     vector <Wall*> wallList;
     vector <Bonus*> bonusList;
+    vector <Enemy*> enemyList;
 
     Character* character;
     Player* player;
     Bullet* bullet;
     Wall* wall;
     Bonus* bonus;
+    Enemy* enemy;
 
 protected:
 
@@ -167,6 +169,12 @@ protected:
     void Preparing();
 
     void SpawnPlayer(int &objectID, int x, int y, int color);
+
+    void BonusCollision();
+
+    void WallCollision();
+
+    void CheckCollision();
 
     void CreateMap();
 
