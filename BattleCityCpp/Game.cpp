@@ -289,6 +289,18 @@ void Game::SpawnPlayer(int& objectID, int x, int y, int color)
 	objectID++;
 }
 
+void Game::SpawnEnemy(int& objectID, int x, int y)
+{
+	enemy = new Enemy(&wData, x, y, BrCyan);
+
+	allObjectList.push_back(enemy);
+	enemyList.push_back(enemy);
+
+	characterList[objectID] = enemy;
+	enemy->SetID(objectID);
+	objectID++;
+}
+
 void Game::BonusCollision()
 {
 	for (int i = 0; i < playerList.size(); i++)
@@ -354,10 +366,36 @@ void Game::WallCollision()
 	}
 }
 
+void Game::BulletCollision()
+{
+	for (int i = 0; i < bulletList.size(); i++)
+	{
+		for (int j = 0; j < bulletList.size(); j++)
+		{
+			if (j == i) continue;
+			if  ( 
+					( bulletList[i]->GetX() == bulletList[j]->GetX() && bulletList[i]->GetY() == bulletList[j]->GetY() ) ||
+					( bulletList[i]->GetDirection() == UP && (bulletList[i]->GetX() == bulletList[j]->GetX() && bulletList[i]->GetY() - 1 == bulletList[j]->GetY()) ) || 
+					( bulletList[i]->GetDirection() == BOT && (bulletList[i]->GetX() == bulletList[j]->GetX() && bulletList[i]->GetY() + 1 == bulletList[j]->GetY()) ) ||
+					( bulletList[i]->GetDirection() == RIGHT && (bulletList[i]->GetX() + 1 == bulletList[j]->GetX() && bulletList[i]->GetY() == bulletList[j]->GetY()) ) ||
+					( bulletList[i]->GetDirection() == LEFT && (bulletList[i]->GetX() - 1 == bulletList[j]->GetX() && bulletList[i]->GetY() == bulletList[j]->GetY()) ) 
+				)
+			{
+				bulletList[i]->DeleteObject();
+				bulletList[j]->DeleteObject();
+
+				bulletList[i]->EraseObject();
+				break;
+			}
+		}
+	}
+}
+
 void Game::CheckCollision()
 {
 	BonusCollision();
 	WallCollision();
+	BulletCollision();
 }
 
 void Game::CreateMap()
@@ -447,7 +485,7 @@ void Game::RunWorld(bool& restart)
 	srand(time(NULL));
 	CreateWorld();
 
-	int tick = 0, charID = 0;
+	int tick = 0, charID = 0, spawnTick = 1;
 	worldIsRun = true;
 
 	thread drawing([&] {
@@ -456,7 +494,7 @@ void Game::RunWorld(bool& restart)
 	drawing.detach();
 
 	SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
-	int playerTick = 0;
+	SpawnPlayer(charID, COLS / 2 + 15, ROWS - 4, Green);
 
 	if (singlePlayer) {
 		while (worldIsRun) {
@@ -464,16 +502,24 @@ void Game::RunWorld(bool& restart)
 			for (int i = 0; i < playerList.size(); i++)
 			{
 				if (tick % playerList[i]->GetSpeed() == 0) {
-					playerTick++;
-
 					playerList[i]->MoveObject();
 
-					if (playerTick % playerList[i]->GetGunSpeed() == 0) {
-						if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
-							playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
-						}
+					if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+						playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
 					}
 				}
+			} // player move
+
+			if (enemyList.size() < 3 && tick % 90 == 0) {
+				int eX, eY;
+
+				if (spawnTick == 1) eX = 2, eY = 2;
+				else if (spawnTick == 2) eX = COLS/2, eY = 2;
+				else if (spawnTick == 3) eX = COLS - 4, eY = 2;
+
+				SpawnEnemy(charID, eX, eY);
+				spawnTick++;
+				if (spawnTick > 3) spawnTick = 1;
 			}
 
 			for (int i = 0; i < bulletList.size(); i++)
@@ -481,7 +527,7 @@ void Game::RunWorld(bool& restart)
 				if (tick % bulletList[i]->GetSpeed() == 0) {
 					bulletList[i]->MoveObject();
 				}
-			}
+			} // bullet move
 
 			if (tick % 1000 == 0) {
 				bonus = new Bonus(&wData, 2 + rand() % (COLS - 6), 2 + rand() % (ROWS - 5), BrYellow);
@@ -489,7 +535,7 @@ void Game::RunWorld(bool& restart)
 				bonus->SetBonusType(STAR);
 				bonusList.push_back(bonus);
 				allObjectList.push_back(bonus);
-			}
+			} // bonus set
 
 			CheckCollision();
 

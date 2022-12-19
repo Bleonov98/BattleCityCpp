@@ -80,7 +80,7 @@ public:
 
 protected:
 
-	void CheckNextStep(int objType);
+	void CheckNextStep();
 
 	int _dir = UP, _nativeSpeed;
 };
@@ -130,52 +130,6 @@ public:
 protected:
 
 	int _type = REGULAR, _gunType = SINGLESHOT, _hp = 25, _ammo = 1;
-
-};
-
-
-class Enemy : public Character
-{
-
-};
-
-class Player : public Character
-{
-public:
-
-	Player(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {
-		nativeColor = color;
-	}
-
-	void DrawObject() override;
-
-	void EraseObject() override;
-
-	void MoveObject() override;
-
-
-
-	// -- bonuses --
-
-	void PowerUP();
-
-	void GetArmor();
-
-	void PickBonus(Bonus* bonus, vector<Enemy*>& enemyList);
-
-	void DestroyEnemy(vector<Enemy*>& enemyList);
-
-	void FreezeEnemy(vector<Enemy*>& enemyList);
-
-	// -- -- -- -- --
-
-
-	int GetGunSpeed() { return gunSpeed; };
-
-
-private:
-
-	void Control();
 
 	char16_t regularSprite[5][3][4]{
 		{
@@ -259,7 +213,70 @@ private:
 		}
 	};
 
-	int bonusTick = 0, nativeColor, gunSpeed = 2;
+};
+
+
+class Enemy : public Character
+{
+public:
+
+	Enemy(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {
+
+	}
+
+	void DrawObject() override;
+
+	void EraseObject() override;
+
+	void MoveObject() override;
+
+private:
+
+	void ChangeDir();
+
+	bool CheckBase();
+
+	void MoveToBase();
+
+	void KillBase();
+
+};
+
+class Player : public Character
+{
+public:
+
+	Player(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {
+		nativeColor = color;
+	}
+
+	void DrawObject() override;
+
+	void EraseObject() override;
+
+	void MoveObject() override;
+
+
+
+	// -- bonuses --
+
+	void PowerUP();
+
+	void GetArmor();
+
+	void PickBonus(Bonus* bonus, vector<Enemy*>& enemyList);
+
+	void DestroyEnemy(vector<Enemy*>& enemyList);
+
+	void FreezeEnemy(vector<Enemy*>& enemyList);
+
+	// -- -- -- -- --
+
+private:
+
+	void Control();
+
+	int bonusTick = 0, nativeColor;
 	bool _armorBonus = true;
 };
 

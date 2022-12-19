@@ -170,9 +170,13 @@ protected:
 
     void SpawnPlayer(int &objectID, int x, int y, int color);
 
+    void SpawnEnemy(int& objectID, int x, int y);
+
     void BonusCollision();
 
     void WallCollision();
+
+    void BulletCollision();
 
     void CheckCollision();
 

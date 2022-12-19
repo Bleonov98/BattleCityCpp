@@ -61,7 +61,7 @@ void DynamicObject::SetDirection(int dir)
 	_dir = dir;
 }
 
-void DynamicObject::CheckNextStep(int objType)
+void DynamicObject::CheckNextStep()
 {
 	for (int i = 0; i < _height; i++)
 	{
@@ -69,7 +69,7 @@ void DynamicObject::CheckNextStep(int objType)
 		{
 			if (_dir == UP && (wData->grid[_y][_x + j] > BASE || wData->grid[_y][_x + j] == BRICK || wData->grid[_y][_x + j] == WATER || wData->grid[_y][_x + j] == STEEL
 				|| wData->grid[_y][_x + j] == BASE)) _y++;
-			else if (_dir == RIGHT && (wData->grid[_y + i][_x + _width - 1] > BASE || wData->grid[_y + i][_x + _width - 1] == BRICK || wData->grid[_y + i][_x + _width - 1] == WATER
+			else if (_dir == RIGHT && (wData->grid[_y + i][_x + _width] > BASE || wData->grid[_y + i][_x + _width - 1] == BRICK || wData->grid[_y + i][_x + _width - 1] == WATER
 				|| wData->grid[_y + i][_x + _width - 1] == STEEL || wData->grid[_y + i][_x + _width - 1] == BASE)) _x--;
 			else if (_dir == BOT && (wData->grid[_y + _height - 1][_x + j] > BASE || wData->grid[_y + _height - 1][_x + j] == BRICK || wData->grid[_y + _height - 1][_x + j] == WATER
 				|| wData->grid[_y + _height - 1][_x + j] == STEEL || wData->grid[_y + _height - 1][_x + j] == BASE)) _y--;
@@ -165,6 +165,86 @@ int Character::GetID()
 	return _id;
 }
 
+// ----------- ENEMY -------------
+
+void Enemy::DrawObject()
+{
+	if (_type == REGULAR) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = regularSprite[_dir][i][j] | (_color << 8);
+				wData->grid[_y + i][_x + j] = 50;
+			}
+		}
+	}
+	else if (_type == FAST) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = midSprite[_dir][i][j] | (_color << 8);
+				wData->grid[_y + i][_x + j] = 50;
+			}
+		}
+	}
+	else if (_type == ARMORED) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = armoredSprite[_dir][i][j] | (_color << 8);
+				wData->grid[_y + i][_x + j] = 50;
+			}
+		}
+	}
+}
+
+void Enemy::EraseObject()
+{
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			wData->vBuf[_y + i][_x + j] = u' ';
+			wData->grid[_y + i][_x + j] = 0;
+		}
+	}
+}
+
+void Enemy::MoveObject()
+{
+	EraseObject();
+	ChangeDir();
+}
+
+bool Enemy::CheckBase()
+{
+	return true;
+}
+
+void Enemy::MoveToBase()
+{
+}
+
+void Enemy::ChangeDir()
+{
+	if (CheckBase()) {
+		MoveToBase();
+		KillBase();
+	}
+
+
+
+	CheckNextStep();
+}
+
+void Enemy::KillBase() 
+{
+
+}
+
 // ----------- PLAYER ------------
 
 
@@ -176,6 +256,7 @@ void Player::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = regularSprite[_dir][i][j] | (_color << 8);
+				wData->grid[_y + i][_x + j] = 50;
 			}
 		}
 	}
@@ -185,6 +266,7 @@ void Player::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = midSprite[_dir][i][j] | (_color << 8);
+				wData->grid[_y + i][_x + j] = 50;
 			}
 		}
 	}
@@ -194,6 +276,7 @@ void Player::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = armoredSprite[_dir][i][j] | (_color << 8);
+				wData->grid[_y + i][_x + j] = 50;
 			}
 		}
 	}
@@ -214,6 +297,7 @@ void Player::EraseObject()
 		for (int j = 0; j < _width; j++)
 		{
 			wData->vBuf[_y + i][_x + j] = u' ';
+			wData->grid[_y + i][_x + j] = 0;
 		}
 	}
 }
@@ -236,7 +320,7 @@ void Player::Control()
 		_dir = LEFT;
 		_x--;
 	}
-	CheckNextStep(CHARACTER);
+	CheckNextStep();
 }
 
 void Player::MoveObject()
@@ -250,6 +334,7 @@ void Player::PowerUP()
 	if (_gunType < STRONGSHOT) _gunType++;
 	if (_type < ARMORED) _type++;
 
+	if (_type == FAST) _speed--;
 	if (_gunType == DOUBLESHOT) _ammo++;
 }
 
