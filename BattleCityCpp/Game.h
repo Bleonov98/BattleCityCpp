@@ -10,7 +10,7 @@ private:
     char coord[100];
 
     bool worldIsRun = false, win = false, singlePlayer = true, exit = false;
-    int score = 0;
+    int score = 0, enemyCnt = 31;
     
     // --------- CONNECTION SETTINGS ---------
 
@@ -139,16 +139,13 @@ private:
     vector <Bonus*> bonusList;
     vector <Enemy*> enemyList;
 
-    Character* character;
-    Player* player;
     Bullet* bullet;
-    Wall* wall;
-    Bonus* bonus;
-    Enemy* enemy;
 
 protected:
 
     void SetPos(int x, int y);
+
+    void HotKeys(int& button);
 
     void DrawArea();
 
@@ -158,7 +155,7 @@ protected:
 
     void DrawToMem();
 
-    void DrawEndInfo(bool& restart);
+    void DrawEndInfo(bool& restart, int button);
 
     void DrawInfo();
 
@@ -172,6 +169,8 @@ protected:
 
     void SpawnEnemy(int& objectID, int x, int y);
 
+    void SpawnBonus();
+
     void BonusCollision();
 
     void WallCollision();
@@ -181,6 +180,8 @@ protected:
     void CheckCollision();
 
     void CreateMap();
+
+    void SetWall(int x, int y, int type);
 
 public:
 

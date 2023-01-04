@@ -63,6 +63,23 @@ void DynamicObject::SetDirection(int dir)
 
 void DynamicObject::CheckNextStep()
 {
+	multimap<bool, pair<int, int>> iceCrd;
+	int checkInt = 0;
+
+	for (int i = 0; i < _height; i++)
+	{
+		for (int j = 0; j < _width; j++)
+		{
+			if (wData->grid[_y + i][_x + j] == ICE) iceCrd.emplace(true, make_pair(_y + i, _x + j));
+			else iceCrd.emplace(false, make_pair(_y + i, _x + j));
+		}
+	}
+
+	auto it = iceCrd.find(true);
+
+	if (it != iceCrd.end()) _speed = 6;
+	else _speed = _nativeSpeed;
+
 	for (int i = 0; i < _height; i++)
 	{
 		for (int j = 0; j < _width; j++)
@@ -75,8 +92,6 @@ void DynamicObject::CheckNextStep()
 				|| wData->grid[_y + _height - 1][_x + j] == STEEL || wData->grid[_y + _height - 1][_x + j] == BASE)) _y--;
 			else if (_dir == LEFT && (wData->grid[_y + i][_x] > BASE || wData->grid[_y + i][_x] == BRICK || wData->grid[_y + i][_x] == WATER || wData->grid[_y + i][_x] == STEEL
 				|| wData->grid[_y + i][_x] == BASE)) _x++;
-			/*else if (wData->grid[_y + i][_x + j] != ICE) _speed = _nativeSpeed;
-			else if (wData->grid[_y + i][_x + j] == ICE) _speed = 6;*/
 		}
 	}
 }   
@@ -119,6 +134,8 @@ void Character::Shot(vector <GameObject*>& allObjList, vector <Bullet*>& bulletL
 void Character::SetType(int type)
 {
 	_type = type;
+
+	if (_type == ARMORED) _hp = 50;
 }
 
 int Character::GetType()
@@ -175,7 +192,7 @@ void Enemy::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = regularSprite[_dir][i][j] | (_color << 8);
-				wData->grid[_y + i][_x + j] = 50;
+				wData->grid[_y + i][_x + j] = CHARACTEREN;
 			}
 		}
 	}
@@ -185,7 +202,7 @@ void Enemy::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = midSprite[_dir][i][j] | (_color << 8);
-				wData->grid[_y + i][_x + j] = 50;
+				wData->grid[_y + i][_x + j] = CHARACTEREN;
 			}
 		}
 	}
@@ -195,9 +212,16 @@ void Enemy::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = armoredSprite[_dir][i][j] | (_color << 8);
-				wData->grid[_y + i][_x + j] = 50;
+				wData->grid[_y + i][_x + j] = CHARACTEREN;
 			}
 		}
+	}
+
+	if (_keepBonus) {
+		if (_bonusTick % 10 == 0) _color = Purple;
+		else if (_bonusTick % 5 == 0) _color = _nativeColor;
+
+		_bonusTick++;
 	}
 }
 
@@ -213,36 +237,135 @@ void Enemy::EraseObject()
 	}
 }
 
-void Enemy::MoveObject()
+void Enemy::MoveObject(int button)
 {
 	EraseObject();
-	ChangeDir();
+	MoveEnemy();
 }
 
-bool Enemy::CheckBase()
+bool Enemy::CheckArea()
 {
-	return true;
+	visibleArea.clear();
+
+	for (int R = 1; R < VISIBLE_RADIUS; ++R)
+	{
+		int x = 0;
+		int y = R;
+
+		int delta = 1 - 2 * R;
+		int err = 0;
+
+		while (y >= x) {
+			if (_x + x > 0 && _y + y > 0) visibleArea.push_back(make_pair(_x + x, _y + y));
+			if (_x + x > 0 && _y - y > 0) visibleArea.push_back(make_pair(_x + x, _y - y));
+			if (_x - x > 0 && _y + y > 0) visibleArea.push_back(make_pair(_x - x, _y + y));
+			if (_x - x > 0 && _y - y > 0) visibleArea.push_back(make_pair(_x - x, _y - y));
+
+			if (_x + y > 0 && _y + x > 0) visibleArea.push_back(make_pair(_x + y, _y + x));
+			if (_x + y > 0 && _y - x > 0) visibleArea.push_back(make_pair(_x + y, _y - x));
+			if (_x - y > 0 && _y + x > 0) visibleArea.push_back(make_pair(_x - y, _y + x));
+			if (_x - y > 0 && _y - x > 0) visibleArea.push_back(make_pair(_x - y, _y - x));
+			
+
+			err = 2 * (delta + y) - 1;
+
+			if ((delta < 0) && (err <= 0)) {
+				delta += 2 * ++x + 1;
+				continue;
+			}
+			if ((delta > 0) && (err > 0)) {
+				delta -= 2 * --y + 1;
+				continue;
+			}
+
+			delta += 2 * (++x - --y);
+		}
+	}
+
+	for (int i = 0; i < visibleArea.size(); i++)
+	{
+		if (wData->grid[visibleArea[i].second][visibleArea[i].first] == BASE) {
+			basePos.first = COLS / 2, basePos.second = visibleArea[i].second;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Enemy::CheckAhead() 
+{
+
+	aheadArea.clear();
+
+	int startX = _x + 1, startY = _y + 1;
+
+	for (int i = 0; i < VISIBLE_DISTANCE; ++i)
+	{
+		if (_dir == UP && startY - i > 2) aheadArea.push_back(make_pair(startX, startY - i));
+		else if (_dir == RIGHT && startX + i < COLS) aheadArea.push_back(make_pair(startX + i, startY));
+		else if (_dir == BOT && startY + i < ROWS) aheadArea.push_back(make_pair(startX, startY + i));
+		else if (_dir == LEFT && startX - i > 2) aheadArea.push_back(make_pair(startX - i, startY));
+	}
+
+	for (int i = 0; i < aheadArea.size(); i++)
+	{
+		if (wData->grid[aheadArea[i].second][aheadArea[i].first] == BRICK ||
+			wData->grid[aheadArea[i].second][aheadArea[i].first] == CHARACTERPL ||
+			wData->grid[aheadArea[i].second][aheadArea[i].first] == BASE) return true;
+	}
+
+	return false;
 }
 
 void Enemy::MoveToBase()
 {
-}
-
-void Enemy::ChangeDir()
-{
-	if (CheckBase()) {
-		MoveToBase();
-		KillBase();
+	if (_y <= basePos.second - (VISIBLE_RADIUS - 10) && _x + 1 < basePos.first) {
+		_dir = RIGHT;
+		_x++;
 	}
-
-
+	else if (_y <= basePos.second - (VISIBLE_RADIUS - 10) && _x + 1 > basePos.first) {
+		_dir = LEFT;
+		_x--;
+	}
+	else if (_x + 1 == basePos.first) _dir = BOT;
+	else if (_y > basePos.second - (VISIBLE_RADIUS / 2) && _y < ROWS - _height - 1) {
+		_dir = BOT;
+		_y++;
+	}
+	else if (_y == basePos.second && _x + 1 < basePos.first) _dir = RIGHT;
+	else if (_y == basePos.second && _x + 1 > basePos.first) _dir = LEFT;
 
 	CheckNextStep();
 }
 
-void Enemy::KillBase() 
+void Enemy::ChangeDir()
 {
+	srand(time(NULL));
+	prevDir = _dir;
 
+	_dir = rand() % STOP;
+	while (_dir == prevDir) _dir = rand() % STOP;
+
+
+}
+
+void Enemy::MoveEnemy()
+{
+	if (CheckArea()) {
+		MoveToBase();
+		return;
+	}
+
+	if (_dir == UP) _y--;
+	else if (_dir == BOT) _y++;
+	else if (_dir == RIGHT) _x++;
+	else if (_dir == LEFT) _x--;
+
+	mTick++;
+
+	CheckNextStep();
+
+	if (mTick % 20 == 0) ChangeDir();
 }
 
 // ----------- PLAYER ------------
@@ -256,7 +379,7 @@ void Player::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = regularSprite[_dir][i][j] | (_color << 8);
-				wData->grid[_y + i][_x + j] = 50;
+				wData->grid[_y + i][_x + j] = CHARACTERPL;
 			}
 		}
 	}
@@ -266,7 +389,7 @@ void Player::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = midSprite[_dir][i][j] | (_color << 8);
-				wData->grid[_y + i][_x + j] = 50;
+				wData->grid[_y + i][_x + j] = CHARACTERPL;
 			}
 		}
 	}
@@ -276,17 +399,17 @@ void Player::DrawObject()
 			for (int j = 0; j < _width; j++)
 			{
 				wData->vBuf[_y + i][_x + j] = armoredSprite[_dir][i][j] | (_color << 8);
-				wData->grid[_y + i][_x + j] = 50;
+				wData->grid[_y + i][_x + j] = CHARACTERPL;
 			}
 		}
 	}
 
 
 	if (_armorBonus) {
-		if (bonusTick % 10 == 0) _color = Yellow;
-		else if (bonusTick % 5 == 0) _color = nativeColor;
+		if (_bonusTick % 10 == 0) _color = Yellow;
+		else if (_bonusTick % 5 == 0) _color = _nativeColor;
 		
-		bonusTick++;
+		_bonusTick++;
 	}
 }
 
@@ -302,31 +425,47 @@ void Player::EraseObject()
 	}
 }
 
-void Player::Control()
+void Player::Control(int button)
 {
-	if (GetAsyncKeyState(VK_UP) & 0x8000) { 
+	if (button == UPKEY) { 
 		_dir = UP;
 		_y--;
 	}
-	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+	else if (button == RIGHTKEY) {
 		_dir = RIGHT;
 		_x++;
 	} 
-	else if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+	else if (button == DOWNKEY) {
 		_dir = BOT;
 		_y++;
 	}
-	else if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+	else if (button == LEFTKEY) {
 		_dir = LEFT;
 		_x--;
 	}
+
 	CheckNextStep();
 }
 
-void Player::MoveObject()
+void Player::Death()
+{
+	_life--;
+	if (_life <= 0) {
+		EraseObject();
+		DeleteObject();
+	}
+	else {
+		EraseObject();
+		_x = COLS / 2 - 15;
+		_y = ROWS - 4;
+		_hp = 25;
+	}
+}
+
+void Player::MoveObject(int button)
 {
 	EraseObject();
-	Control();
+	Control(button);
 }
 
 void Player::PowerUP()
@@ -383,7 +522,7 @@ void Bullet::EraseObject()
 	wData->vBuf[_y][_x] = u' ';
 }
 
-void Bullet::MoveObject()
+void Bullet::MoveObject(int button)
 {
 	EraseObject();
 	Trajectory();
@@ -427,11 +566,25 @@ void Bullet::Trajectory()
 
 void Wall::DrawObject()
 {
+	if (_type == BASE) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = baseSprite[i][j] | (_color << 8);
+				wData->grid[_y + i][_x + j] = _type;
+			}
+		}
+
+		return;
+	}
+
 	for (int i = 0; i < _height; i++)
 	{
 		for (int j = 0; j < _width; j++)
 		{
 			wData->vBuf[_y + i][_x + j] = u'#' | (_color << 8);
+			wData->grid[_y + i][_x + j] = _type;
 		}
 	}
 }
@@ -443,30 +596,9 @@ void Wall::EraseObject()
 		for (int j = 0; j < _width; j++)
 		{
 			wData->vBuf[_y + i][_x + j] = u' ';
+			wData->grid[_y + i][_x + j] = 0;
 		}
 	}
-}
-
-void Wall::ChangeWallPos()
-{
-	if (GetAsyncKeyState(VK_UP) & 0x8000) _y--;
-	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) _x++;
-	else if (GetAsyncKeyState(VK_DOWN) & 0x8000) _y++;
-	else if (GetAsyncKeyState(VK_LEFT) & 0x8000) _x--;
-	else if (GetAsyncKeyState(VK_SPACE) & 0x8000) ChangeWallType();
-}
-
-void Wall::ChangeWallType()
-{
-	_type++;
-	if (_type > BASE) _type = BRICK;
-
-	if (_type == BRICK) _color = BrRed;
-	else if (_type == WATER) _color = Blue;
-	else if (_type == GRASS) _color = BrGreen;
-	else if (_type == STEEL) _color = White;
-	else if (_type == ICE) _color = BrCyan;
-	else if (_type == BASE) _color = Yellow;
 }
 
 bool Wall::SetWallPos()
@@ -556,6 +688,20 @@ void Wall::DestroyWall(int direction, int power)
 
 
 	if (_height == 0 || _width == 0) DeleteObject();
+}
+
+void Wall::SetWallType(int type)
+{
+	_type = type;
+
+	if (_type > BASE) _type = BRICK;
+
+	if (_type == BRICK) _color = BrRed;
+	else if (_type == WATER) _color = Blue;
+	else if (_type == GRASS) _color = BrGreen;
+	else if (_type == STEEL) _color = White;
+	else if (_type == ICE) _color = BrCyan;
+	else if (_type == BASE) _color = Yellow, _width = 3, _height = 3;
 }
 
 // ------------- BONUS -----------------

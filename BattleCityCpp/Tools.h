@@ -1,6 +1,8 @@
 #pragma once
 #include "stdfix.h"
 
+typedef std::vector<pair<int, int>> vecPairInt;
+
 typedef struct WD {
 	char16_t vBuf[ROWS][COLS]{ 0 };
 	int grid[ROWS][COLS]{ 0 };
@@ -56,13 +58,14 @@ enum WallType {
 	GRASS = 3,
 	STEEL = 4,
 	ICE = 5,
-	BASE = 6
+	BASE = 6 
 };
 
 enum ObjectType {
-	CHARACTER,
-	BULLET,
-	BONUS
+	CHARACTERPL = 50,
+	CHARACTEREN = 51,
+	BULLET = 55,
+	BONUS = 60
 };
 
 enum BulletPower {
@@ -73,4 +76,15 @@ enum BulletPower {
 enum BulletOwner {
 	PLAYER,
 	ENEMY
+};
+
+enum Buttons {
+	UPKEY,
+	DOWNKEY,
+	RIGHTKEY,
+	LEFTKEY,
+	ESCKEY,
+	SPACEKEY,
+	RETURNKEY,
+	NOKEY
 };

@@ -3,9 +3,10 @@
 int main()
 {
 	bool restart = false;
+	Game gm;
+
 	do
 	{
-		Game gm;
 		gm.RunWorld(restart);
 	} while (restart);
 

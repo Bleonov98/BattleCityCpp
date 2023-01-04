@@ -6,6 +6,20 @@ void Game::SetPos(int x, int y)
 	printf(coord);
 }
 
+void Game::HotKeys(int& button)
+{
+	while (true) {
+		if (GetAsyncKeyState(VK_UP) & 0x8000) button = UPKEY;
+		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) button = RIGHTKEY;
+		else if (GetAsyncKeyState(VK_DOWN) & 0x8000) button = DOWNKEY;
+		else if (GetAsyncKeyState(VK_LEFT) & 0x8000) button = LEFTKEY;
+		else if (GetAsyncKeyState(VK_SPACE) & 0x8000) button = SPACEKEY;
+		else if (GetAsyncKeyState(VK_RETURN) & 0x8000) button = RETURNKEY;
+		else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) button = ESCKEY;
+		else button = NOKEY;
+	}
+}
+
 void Game::DrawArea()
 {
 	// Set console code page to UTF-8 so console known how to interpret string data
@@ -160,7 +174,7 @@ void Game::CreateWorld() {
 	Preparing();
 }
 
-void Game::DrawEndInfo(bool& restart)
+void Game::DrawEndInfo(bool& restart, int button)
 {
 	if (win) {
 		SetPos(COLS / 3 + 3, 24);
@@ -177,11 +191,21 @@ void Game::DrawEndInfo(bool& restart)
 	restart = false;
 
 	while (!pressed) {
-		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+		if (button == ESCKEY) {
 			restart = false;
 			pressed = true;
 		}
 	}
+}
+
+void Game::DrawInfo()
+{
+	SetPos(COLS + 10, 2);
+	cout << score;
+	SetPos(COLS + 10, 4);
+	cout << playerList[0]->GetLifes();
+	SetPos(COLS + 10, 8);
+	cout << "LEFT: " << enemyCnt;
 }
 
 void Game::DrawChanges()
@@ -247,7 +271,7 @@ void Game::DrawChanges()
 				}
 			}
 		}
-
+		DrawInfo();
 	} while (worldIsRun);
 	
 }
@@ -279,7 +303,7 @@ void Game::Preparing()
 
 void Game::SpawnPlayer(int& objectID, int x, int y, int color)
 {
-	player = new Player(&wData, x, y, color);
+	Player* player = new Player(&wData, x, y, color);
 
 	allObjectList.push_back(player);
 	playerList.push_back(player);
@@ -291,14 +315,26 @@ void Game::SpawnPlayer(int& objectID, int x, int y, int color)
 
 void Game::SpawnEnemy(int& objectID, int x, int y)
 {
-	enemy = new Enemy(&wData, x, y, BrCyan);
-
-	allObjectList.push_back(enemy);
-	enemyList.push_back(enemy);
+	Enemy* enemy = new Enemy(&wData, x, y, BrCyan);
 
 	characterList[objectID] = enemy;
 	enemy->SetID(objectID);
+	enemy->SetType(rand() % (ARMORED + 1));
 	objectID++;
+	enemyCnt--;
+
+	if (enemyCnt % 10 == 0) enemy->SetBonusKeeper();
+
+	allObjectList.push_back(enemy);
+	enemyList.push_back(enemy);
+}
+
+void Game::SpawnBonus()
+{
+	Bonus* bonus = new Bonus(&wData, 2 + rand() % (COLS - 6), 2 + rand() % (ROWS - 5), BrYellow);
+	bonus->SetBonusType(rand() % (TIME + 1));
+	bonusList.push_back(bonus);
+	allObjectList.push_back(bonus);
 }
 
 void Game::BonusCollision()
@@ -373,6 +409,7 @@ void Game::BulletCollision()
 		for (int j = 0; j < bulletList.size(); j++)
 		{
 			if (j == i) continue;
+			if (bulletList[i]->GetOwner() == bulletList[j]->GetOwner()) continue;
 			if  ( 
 					( bulletList[i]->GetX() == bulletList[j]->GetX() && bulletList[i]->GetY() == bulletList[j]->GetY() ) ||
 					( bulletList[i]->GetDirection() == UP && (bulletList[i]->GetX() == bulletList[j]->GetX() && bulletList[i]->GetY() - 1 == bulletList[j]->GetY()) ) || 
@@ -389,6 +426,64 @@ void Game::BulletCollision()
 			}
 		}
 	}
+
+	bool brk = false;
+
+	for (int bullet = 0; bullet < bulletList.size(); bullet++)
+	{
+		brk = false;
+		for (int enemy = 0; enemy < enemyList.size(); enemy++)
+		{
+			if (bulletList[bullet]->GetOwner() != PLAYER) break;
+
+			for (int eHeight = 0; eHeight < enemyList[enemy]->GetHeight(); eHeight++)
+			{
+				for (int eWidth = 0; eWidth < enemyList[enemy]->GetWidth(); eWidth++)
+				{
+
+					if (bulletList[bullet]->GetX() == enemyList[enemy]->GetX() + eWidth && bulletList[bullet]->GetY() == enemyList[enemy]->GetY() + eHeight) {
+						enemyList[enemy]->Hit();
+						bulletList[bullet]->DeleteObject();
+
+						score += 25;
+						if (enemyList[enemy]->BonusKeeper()) SpawnBonus();
+
+						brk = true;
+					}
+
+					if (brk) break;
+				}
+				if (brk) break;
+			}
+			if (brk) break;
+		}
+	}
+
+	for (int bullet = 0; bullet < bulletList.size(); bullet++)
+	{
+		brk = false;
+		for (int player = 0; player < playerList.size(); player++)
+		{
+			if (bulletList[bullet]->GetOwner() == PLAYER) break;
+
+			for (int pHeight = 0; pHeight < playerList[player]->GetHeight(); pHeight++)
+			{
+				for (int pWidth = 0; pWidth < playerList[player]->GetWidth(); pWidth++)
+				{
+
+					if (bulletList[bullet]->GetX() == playerList[player]->GetX() + pWidth && bulletList[bullet]->GetY() == playerList[player]->GetY() + pHeight) {
+						playerList[player]->Hit();
+						bulletList[bullet]->DeleteObject();
+
+						brk = true;
+					}
+					if (brk) break;
+				}
+				if (brk) break;
+			}
+			if (brk) break;
+		}
+	}
 }
 
 void Game::CheckCollision()
@@ -400,35 +495,89 @@ void Game::CheckCollision()
 
 void Game::CreateMap()
 {
-	wall = new Wall(&wData, COLS / 2, ROWS / 2, BrRed);
+	SetWall(5, 5, BRICK);
+	SetWall(5, 11, BRICK);
+	SetWall(5, 17, BRICK);
 
-	while (true)
-	{
-		wall->EraseObject();
-		wall->ChangeWallPos();
-		wall->DrawObject();
+	SetWall(14, 5, BRICK);
+	SetWall(14, 11, BRICK);
+	SetWall(14, 17, BRICK);
+			
+	SetWall(23, 5, BRICK);
+	SetWall(23, 11, BRICK);
+	SetWall(23, 17, BRICK);
 
-		for (int i = 0; i < wallList.size(); i++)
-		{
-			wallList[i]->DrawObject();
-		}
+	SetWall(32, 5, BRICK);
+	SetWall(32, 11, BRICK);
+	SetWall(32, 17, BRICK);
 
-		DrawChanges();
+	SetWall(41, 5, BRICK);
+	SetWall(41, 11, BRICK);
+	SetWall(41, 17, BRICK);
 
-		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-			wall->EraseObject();
-			break;
-		}
+	SetWall(50, 5, BRICK);
+	SetWall(50, 11, BRICK);
+	SetWall(50, 17, BRICK);
 
-		if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
-			if (wall->SetWallPos()) {
-				wallList.push_back(wall);
-				wall = new Wall(&wData, COLS / 2, ROWS / 2, BrRed);
-			}
-		}
+	SetWall(59, 5, BRICK);
+	SetWall(59, 11, BRICK);
+	SetWall(59, 17, BRICK);
 
-		Sleep(100);
-	}
+	SetWall(68, 5, BRICK);
+	SetWall(68, 11, BRICK);
+	SetWall(68, 17, BRICK);
+
+	SetWall(77, 5, BRICK);
+	SetWall(77, 11, BRICK);
+	SetWall(77, 17, BRICK);
+
+
+	SetWall(5, 23, WATER);
+	SetWall(11, 23, WATER);
+	SetWall(17, 23, WATER);
+	SetWall(23, 23, WATER);
+
+	SetWall(59, 23, WATER);
+	SetWall(65, 23, WATER);
+	SetWall(71, 23, WATER);
+	SetWall(77, 23, WATER);
+
+	SetWall(83, 5, GRASS);
+	SetWall(83, 11, GRASS);
+	SetWall(83, 17, GRASS);
+	SetWall(83, 23, GRASS);
+	SetWall(83, 29, GRASS);
+	SetWall(83, 35, GRASS);
+	SetWall(83, 40, GRASS);
+
+
+	SetWall(2, ROWS - 12, ICE);
+	SetWall(8, ROWS - 12, ICE);
+	SetWall(14, ROWS - 12, ICE);
+	SetWall(20, ROWS - 12, ICE);
+	SetWall(26, ROWS - 12, ICE);
+	SetWall(32, ROWS - 12, ICE);
+	SetWall(38, ROWS - 12, ICE);
+	SetWall(44, ROWS - 12, ICE);
+	SetWall(50, ROWS - 12, ICE);
+	SetWall(56, ROWS - 12, ICE);
+	SetWall(62, ROWS - 12, ICE);
+	SetWall(68, ROWS - 12, ICE);
+
+	SetWall(74, ROWS - 13, STEEL);
+	SetWall(74, ROWS - 7, STEEL);
+
+	SetWall(COLS / 2 - 1, ROWS - 4, BASE);
+
+}
+
+void Game::SetWall(int x, int y, int type)
+{
+	Wall* wall = new Wall(&wData, x, y, BrRed);
+
+	wallList.push_back(wall);
+	wallList.back()->SetWallType(type);
+	wallList.back()->SetWallPos();
 }
 
 void Game::DrawToMem()
@@ -461,6 +610,25 @@ void Game::DrawToMem()
 		}
 	}
 
+	for (int i = 0; i < enemyList.size(); i++)
+	{
+		if (enemyList[i]->IsObjectDelete()) {
+			vector <Enemy*>::iterator eIt;
+			eIt = enemyList.begin() + i;
+			enemyList.erase(enemyList.begin() + i);
+			i = -1;
+		}
+	}
+
+	for (int i = 0; i < playerList.size(); i++)
+	{
+		if (playerList[i]->IsObjectDelete()) {
+			auto pIt = playerList.begin() + i;
+			playerList.erase(pIt);
+			i = -1;
+		}
+	}
+
 	for (int i = 0; i < allObjectList.size(); i++)
 	{
 		if (allObjectList[i]->IsObjectDelete()) {
@@ -485,16 +653,17 @@ void Game::RunWorld(bool& restart)
 	srand(time(NULL));
 	CreateWorld();
 
-	int tick = 0, charID = 0, spawnTick = 1;
+	int tick = 0, charID = 0, spawnTick = 1, button = NOKEY;
 	worldIsRun = true;
 
 	thread drawing([&] {
 		DrawChanges();
 	});
-	drawing.detach();
+	thread pressKeys([&] {
+		HotKeys(button);
+	});
 
 	SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
-	SpawnPlayer(charID, COLS / 2 + 15, ROWS - 4, Green);
 
 	if (singlePlayer) {
 		while (worldIsRun) {
@@ -502,15 +671,15 @@ void Game::RunWorld(bool& restart)
 			for (int i = 0; i < playerList.size(); i++)
 			{
 				if (tick % playerList[i]->GetSpeed() == 0) {
-					playerList[i]->MoveObject();
+					playerList[i]->MoveObject(button);
 
-					if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+					if (button == SPACEKEY) {
 						playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
 					}
 				}
 			} // player move
 
-			if (enemyList.size() < 3 && tick % 90 == 0) {
+			if (enemyList.size() < 3 && tick % 95 == 0) {
 				int eX, eY;
 
 				if (spawnTick == 1) eX = 2, eY = 2;
@@ -521,21 +690,19 @@ void Game::RunWorld(bool& restart)
 				spawnTick++;
 				if (spawnTick > 3) spawnTick = 1;
 			}
+			
+			for (int i = 0; i < enemyList.size(); i++)
+			{
+				if (tick % enemyList[i]->GetSpeed() == 0) enemyList[i]->MoveObject(NOKEY);
+				if (enemyList[i]->CheckAhead()) enemyList[i]->Shot(allObjectList, bulletList, bullet, ENEMY);
+			}
 
 			for (int i = 0; i < bulletList.size(); i++)
 			{
 				if (tick % bulletList[i]->GetSpeed() == 0) {
-					bulletList[i]->MoveObject();
+					bulletList[i]->MoveObject(NOKEY);
 				}
 			} // bullet move
-
-			if (tick % 1000 == 0) {
-				bonus = new Bonus(&wData, 2 + rand() % (COLS - 6), 2 + rand() % (ROWS - 5), BrYellow);
-				//bonus->SetBonusType(rand() % TIME);
-				bonus->SetBonusType(STAR);
-				bonusList.push_back(bonus);
-				allObjectList.push_back(bonus);
-			} // bonus set
 
 			CheckCollision();
 
@@ -544,13 +711,19 @@ void Game::RunWorld(bool& restart)
 			Sleep(20);
 
 			tick++;
+
+			if (button == ESCKEY) worldIsRun = false;
+			if (playerList.size() <= 0) worldIsRun = false, win = false;
 		}
 	}
 	else {
 		Sleep(100);
 	}
 
-	DrawEndInfo(restart);
+	DrawEndInfo(restart, button);
+
+	drawing.join();
+	pressKeys.join();
 
 	printf(CSI "?1049l");
 }

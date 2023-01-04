@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <algorithm>
+#include <iterator>
+#include <map>
 #include <thread>
 #include <wchar.h>
 #include <stdlib.h>

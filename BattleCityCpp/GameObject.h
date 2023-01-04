@@ -70,7 +70,7 @@ public:
 	}
 
 
-	virtual void MoveObject() = 0;
+	virtual void MoveObject(int button) = 0;
 
 
 	int GetDirection();
@@ -98,6 +98,7 @@ public:
 	Character(wd* wData, int x, int y, int color) : DynamicObject(wData, x, y, color) {
 		_width = 3;
 		_height = 3;
+		_nativeColor = color;
 	}
 
 
@@ -124,12 +125,12 @@ public:
 
 	void Hit();
 
-	void Death();
+	virtual void Death();
 
 
 protected:
 
-	int _type = REGULAR, _gunType = SINGLESHOT, _hp = 25, _ammo = 1;
+	int _type = REGULAR, _gunType = SINGLESHOT, _hp = 25, _ammo = 1, _bonusTick = 0, _nativeColor;
 
 	char16_t regularSprite[5][3][4]{
 		{
@@ -215,48 +216,60 @@ protected:
 
 };
 
-
 class Enemy : public Character
 {
 public:
 
 	Enemy(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {
-
+		_dir = RIGHT;
 	}
 
 	void DrawObject() override;
 
 	void EraseObject() override;
 
-	void MoveObject() override;
+	void MoveObject(int button) override;
+
+	bool CheckAhead();
+
+	void SetBonusKeeper() { _keepBonus = true; }
+
+	bool BonusKeeper() { return _keepBonus; }
 
 private:
 
+	void MoveEnemy();
+
 	void ChangeDir();
 
-	bool CheckBase();
+	bool CheckArea();
 
 	void MoveToBase();
 
-	void KillBase();
+	int mTick = 0, prevDir = rand() % STOP;
+	bool _keepBonus = false;
+	pair<int, int> basePos;
+ 
+	const int VISIBLE_RADIUS = 30;
+	const int VISIBLE_DISTANCE = 45;
 
+	vecPairInt visibleArea;
+	vecPairInt aheadArea;
 };
 
 class Player : public Character
 {
 public:
 
-	Player(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {
-		nativeColor = color;
-	}
+	Player(wd* wData, int x, int y, int color) : Character(wData, x, y, color) {}
 
 	void DrawObject() override;
 
 	void EraseObject() override;
 
-	void MoveObject() override;
+	void MoveObject(int button) override;
 
-
+	int GetLifes() { return _life; }
 
 	// -- bonuses --
 
@@ -274,10 +287,12 @@ public:
 
 private:
 
-	void Control();
+	void Death();
 
-	int bonusTick = 0, nativeColor;
-	bool _armorBonus = true;
+	void Control(int button);
+
+	int _life = 3;
+	bool _armorBonus = false;
 };
 
 
@@ -297,7 +312,7 @@ public:
 
 	void EraseObject() override;
 
-	void MoveObject() override;
+	void MoveObject(int button) override;
 
 	
 	void SetBulletPower(int power, int speed);
@@ -330,8 +345,8 @@ class Wall : public GameObject
 public:
 
 	Wall(wd* wData, int x, int y, int color) : GameObject(wData, x, y, color) {
-		_height = 4;
-		_width = 4;
+		_height = 6;
+		_width = 6;
 	}
 
 	void DrawObject() override;
@@ -339,12 +354,9 @@ public:
 	void EraseObject() override;
 
 
-	void ChangeWallPos();
-
-	void ChangeWallType();
-
-
 	bool SetWallPos();
+
+	void SetWallType(int type);
 
 	int GetWallType();
 
@@ -354,7 +366,12 @@ private:
 
 	int _type = BRICK, _side;
 
-	
+	char16_t baseSprite[3][4]{
+		u" # ",
+		u"###",
+		u"###"
+	};
+
 };
 
 
