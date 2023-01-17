@@ -156,6 +156,15 @@
   <ItemGroup>
     <Text Include="..\BattleCityArea.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\bonus.wav" />
+    <Media Include="..\death.wav" />
+    <Media Include="..\hitArmored.wav" />
+    <Media Include="..\hitSteel.wav" />
+    <Media Include="..\move.wav" />
+    <Media Include="..\shot.wav" />
+    <Media Include="..\title.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

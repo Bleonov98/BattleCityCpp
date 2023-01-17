@@ -50,4 +50,27 @@
   <ItemGroup>
     <Text Include="..\BattleCityArea.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\title.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\move.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\shot.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\hitArmored.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\death.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\hitSteel.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="..\bonus.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
 </Project>

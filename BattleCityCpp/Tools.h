@@ -58,7 +58,8 @@ enum WallType {
 	GRASS = 3,
 	STEEL = 4,
 	ICE = 5,
-	BASE = 6 
+	BASE = 6,
+	BASEBRICK = 7
 };
 
 enum ObjectType {

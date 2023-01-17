@@ -62,6 +62,26 @@ LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 
 IDR_TEXT1               TEXT                    "C:\\Users\\Borys\\source\\repos\\BattleCityCpp\\BattleCityArea.txt"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// WAVE
+//
+
+IDR_WAVE1               WAVE                    "..\\title.wav"
+
+IDR_WAVE2               WAVE                    "..\\move.wav"
+
+IDR_WAVE3               WAVE                    "..\\shot.wav"
+
+IDR_WAVE4               WAVE                    "..\\hitArmored.wav"
+
+IDR_WAVE5               WAVE                    "..\\death.wav"
+
+IDR_WAVE6               WAVE                    "..\\hitSteel.wav"
+
+IDR_WAVE7               WAVE                    "..\\bonus.wav"
+
 #endif    // Ukrainian (Ukraine) resources
 /////////////////////////////////////////////////////////////////////////////
 

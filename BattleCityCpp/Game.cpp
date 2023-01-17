@@ -384,6 +384,7 @@ void Game::WallCollision()
 						if (wallList[wall]->GetWallType() == BASE) {
 							win = false;
 							worldIsRun = false;
+							PlaySound(MAKEINTRESOURCE(IDR_WAVE5), NULL, SND_RESOURCE | SND_ASYNC);
 
 							wallList[wall]->DeleteObject();
 
@@ -551,23 +552,24 @@ void Game::CreateMap()
 	SetWall(83, 40, GRASS);
 
 
-	SetWall(2, ROWS - 12, ICE);
-	SetWall(8, ROWS - 12, ICE);
-	SetWall(14, ROWS - 12, ICE);
-	SetWall(20, ROWS - 12, ICE);
-	SetWall(26, ROWS - 12, ICE);
-	SetWall(32, ROWS - 12, ICE);
-	SetWall(38, ROWS - 12, ICE);
-	SetWall(44, ROWS - 12, ICE);
-	SetWall(50, ROWS - 12, ICE);
-	SetWall(56, ROWS - 12, ICE);
-	SetWall(62, ROWS - 12, ICE);
-	SetWall(68, ROWS - 12, ICE);
+	SetWall(2, ROWS - 13, ICE);
+	SetWall(8, ROWS - 13, ICE);
+	SetWall(14, ROWS - 13, ICE);
+	SetWall(20, ROWS - 13, ICE);
+	SetWall(26, ROWS - 13, ICE);
+	SetWall(32, ROWS - 13, ICE);
+	SetWall(38, ROWS - 13, ICE);
+	SetWall(44, ROWS - 13, ICE);
+	SetWall(50, ROWS - 13, ICE);
+	SetWall(56, ROWS - 13, ICE);
+	SetWall(62, ROWS - 13, ICE);
+	SetWall(68, ROWS - 13, ICE);
 
 	SetWall(74, ROWS - 13, STEEL);
 	SetWall(74, ROWS - 7, STEEL);
 
 	SetWall(COLS / 2 - 1, ROWS - 4, BASE);
+	SetWall(COLS / 2 - 4, ROWS - 6, BASEBRICK);
 
 }
 
@@ -652,6 +654,8 @@ void Game::RunWorld(bool& restart)
 {
 	srand(time(NULL));
 	CreateWorld();
+	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC | SND_NOSTOP);
+
 
 	int tick = 0, charID = 0, spawnTick = 1, button = NOKEY;
 	worldIsRun = true;

@@ -107,6 +107,8 @@ void Character::Shot(vector <GameObject*>& allObjList, vector <Bullet*>& bulletL
 	}
 	_ammo--;
 
+	PlaySound(MAKEINTRESOURCE(IDR_WAVE3), NULL, SND_RESOURCE | SND_ASYNC);
+
 	if (_gunType <= SINGLESHOT) {
 		bullet = new Bullet(wData, _x + _width / 2, _y + _height / 2, Red);
 		bullet->SetDirection(_dir);
@@ -163,7 +165,9 @@ void Character::Hit()
 	_hp -= 25;
 	if (_hp <= 0) {
 		Death();
+		PlaySound(MAKEINTRESOURCE(IDR_WAVE5), NULL, SND_RESOURCE | SND_ASYNC);
 	}
+	else PlaySound(MAKEINTRESOURCE(IDR_WAVE4), NULL, SND_RESOURCE | SND_ASYNC);
 }
 
 void Character::Death()
@@ -444,6 +448,8 @@ void Player::Control(int button)
 		_x--;
 	}
 
+	if (button != NOKEY && button != SPACEKEY) PlaySound(MAKEINTRESOURCE(IDR_WAVE2), NULL, SND_RESOURCE | SND_ASYNC | SND_NOSTOP);
+
 	CheckNextStep();
 }
 
@@ -492,6 +498,8 @@ void Player::PickBonus(Bonus* bonus, vector<Enemy*>& enemyList)
 
 	bonus->DeleteObject();
 	bonus->EraseObject();
+
+	PlaySound(MAKEINTRESOURCE(IDR_WAVE7), NULL, SND_RESOURCE | SND_ASYNC);
 }
 
 void Player::DestroyEnemy(vector<Enemy*>& enemyList)
@@ -578,13 +586,15 @@ void Wall::DrawObject()
 
 		return;
 	}
-
-	for (int i = 0; i < _height; i++)
-	{
-		for (int j = 0; j < _width; j++)
+	else if (_type == BASEBRICK) return;
+	else {
+		for (int i = 0; i < _height; i++)
 		{
-			wData->vBuf[_y + i][_x + j] = u'#' | (_color << 8);
-			wData->grid[_y + i][_x + j] = _type;
+			for (int j = 0; j < _width; j++)
+			{
+				wData->vBuf[_y + i][_x + j] = u'#' | (_color << 8);
+				wData->grid[_y + i][_x + j] = _type;
+			}
 		}
 	}
 }
@@ -603,6 +613,18 @@ void Wall::EraseObject()
 
 bool Wall::SetWallPos()
 {
+	if (_type == BASEBRICK) {
+		for (int i = 0; i < _height; i++)
+		{
+			for (int j = 0; j < _width; j++)
+			{
+				if (i >= 2 && j >= 2 && j <= 6) continue;
+				wData->vBuf[_y + i][_x + j] = u'#' | (_color << 8);
+				wData->grid[_y + i][_x + j] = _type;
+			}
+		}
+	}
+
 	for (int i = 0; i < _height; i++)
 	{
 		for (int j = 0; j < _width; j++)
@@ -635,12 +657,15 @@ void Wall::DestroyWall(int direction, int power)
 	else if (direction == LEFT) _side = RIGHT;
 
 	int damageSize = 0;
-	if (_type == BRICK) {
+	if (_type == BRICK || _type == BASEBRICK) {
 		if (power == STANDART) damageSize = 1;
 		else damageSize = 2;
 	}
 	else {
-		if (power == STANDART) return;
+		if (power == STANDART) {
+			PlaySound(MAKEINTRESOURCE(IDR_WAVE6), NULL, SND_RESOURCE | SND_ASYNC);
+			return;
+		}
 		else damageSize = 1;
 	}
 
@@ -694,14 +719,13 @@ void Wall::SetWallType(int type)
 {
 	_type = type;
 
-	if (_type > BASE) _type = BRICK;
-
 	if (_type == BRICK) _color = BrRed;
 	else if (_type == WATER) _color = Blue;
 	else if (_type == GRASS) _color = BrGreen;
 	else if (_type == STEEL) _color = White;
 	else if (_type == ICE) _color = BrCyan;
 	else if (_type == BASE) _color = Yellow, _width = 3, _height = 3;
+	else if (_type == BASEBRICK) _color = BrRed, _width = 9, _height = 5;
 }
 
 // ------------- BONUS -----------------
