@@ -49,6 +49,39 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\BattleCityArea.txt" />
+    <Text Include="..\ASCII frame\frame1.txt" />
+    <Text Include="..\ASCII frame\frame2.txt" />
+    <Text Include="..\ASCII frame\frame3.txt" />
+    <Text Include="..\ASCII frame\frame4.txt" />
+    <Text Include="..\ASCII frame\frame5.txt" />
+    <Text Include="..\ASCII frame\frame6.txt" />
+    <Text Include="..\ASCII frame\frame7.txt" />
+    <Text Include="..\ASCII frame\frame8.txt" />
+    <Text Include="..\ASCII frame\frame9.txt" />
+    <Text Include="..\ASCII frame\frame10.txt" />
+    <Text Include="..\ASCII frame\frame11.txt" />
+    <Text Include="..\ASCII frame\frame12.txt" />
+    <Text Include="..\ASCII frame\frame13.txt" />
+    <Text Include="..\ASCII frame\frame14.txt" />
+    <Text Include="..\ASCII frame\frame15.txt" />
+    <Text Include="..\ASCII frame\frame16.txt" />
+    <Text Include="..\ASCII frame\frame17.txt" />
+    <Text Include="..\ASCII frame\frame18.txt" />
+    <Text Include="..\ASCII frame\frame19.txt" />
+    <Text Include="..\ASCII frame\frame20.txt" />
+    <Text Include="..\ASCII frame\frame21.txt" />
+    <Text Include="..\ASCII frame\frame22.txt" />
+    <Text Include="..\ASCII frame\frame23.txt" />
+    <Text Include="..\ASCII frame\frame24.txt" />
+    <Text Include="..\ASCII frame\frame25.txt" />
+    <Text Include="..\ASCII frame\frame26.txt" />
+    <Text Include="..\ASCII frame\frame27.txt" />
+    <Text Include="..\ASCII frame\frame28.txt" />
+    <Text Include="..\ASCII frame\frame29.txt" />
+    <Text Include="..\ASCII frame\frame30.txt" />
+    <Text Include="..\ASCII frame\frame31.txt" />
+    <Text Include="..\ASCII frame\frame32.txt" />
+    <Text Include="..\ASCII frame\frame33.txt" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="..\title.wav">

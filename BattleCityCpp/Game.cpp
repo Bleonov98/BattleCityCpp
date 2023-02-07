@@ -22,6 +22,43 @@ void Game::HotKeys(int& button)
 
 void Game::DrawMovie()
 {
+	// Set console code page to UTF-8 so console known how to interpret string data
+	SetConsoleOutputCP(CP_UTF8);
+
+	// Enable buffering to prevent VS from chopping up UTF-8 byte sequences
+	setvbuf(stdout, nullptr, _IOFBF, 1000);
+	
+	int filesCnt = 33;
+
+	for (int resId = 110; resId < 110 + filesCnt; resId++)
+	{
+		HRSRC hResource = FindResource(hInstance, MAKEINTRESOURCE(resId), L"TEXT"); // find res by id (IDR_TEXT3 to IDR_TEXT33)
+
+		if (hResource)
+		{
+			HGLOBAL hLoadedResource = LoadResource(hInstance, hResource);
+
+			if (hLoadedResource)
+			{
+				LPCSTR movie = (LPCSTR)LockResource(hLoadedResource);
+
+				if (movie)
+				{
+					DWORD dwResourceSize = SizeofResource(hInstance, hResource);
+
+					if (0 != dwResourceSize)
+					{
+						for (int i = 0; i < strnlen(movie, 80 * 39); i++) {
+							cout << movie[i];
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	setvbuf(stdout, NULL, _IONBF, 0);
 
 }
 
@@ -174,6 +211,7 @@ void Game::CreateWorld() {
 	printf(CSI "?1049h"); // enable alt buffer
 	printf(CSI "?25l"); // hide cursor blinking
 
+	DrawMovie();
 	DrawArea();
 	MainMenu();
 	Preparing();

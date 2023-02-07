@@ -60,7 +60,73 @@ LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 // TEXT
 //
 
-IDR_TEXT1               TEXT                    "C:\\Users\\Borys\\source\\repos\\BattleCityCpp\\BattleCityArea.txt"
+IDR_TEXT1               TEXT                    "..\\BattleCityArea.txt"
+
+IDR_TEXT3               TEXT                    "..\\ASCII frame\\frame1.txt"
+
+IDR_TEXT4               TEXT                    "..\\ASCII frame\\frame2.txt"
+
+IDR_TEXT5               TEXT                    "..\\ASCII frame\\frame3.txt"
+
+IDR_TEXT6               TEXT                    "..\\ASCII frame\\frame4.txt"
+
+IDR_TEXT7               TEXT                    "..\\ASCII frame\\frame5.txt"
+
+IDR_TEXT8               TEXT                    "..\\ASCII frame\\frame6.txt"
+
+IDR_TEXT9               TEXT                    "..\\ASCII frame\\frame7.txt"
+
+IDR_TEXT10              TEXT                    "..\\ASCII frame\\frame8.txt"
+
+IDR_TEXT11              TEXT                    "..\\ASCII frame\\frame9.txt"
+
+IDR_TEXT12              TEXT                    "..\\ASCII frame\\frame10.txt"
+
+IDR_TEXT13              TEXT                    "..\\ASCII frame\\frame11.txt"
+
+IDR_TEXT14              TEXT                    "..\\ASCII frame\\frame12.txt"
+
+IDR_TEXT15              TEXT                    "..\\ASCII frame\\frame13.txt"
+
+IDR_TEXT16              TEXT                    "..\\ASCII frame\\frame14.txt"
+
+IDR_TEXT17              TEXT                    "..\\ASCII frame\\frame15.txt"
+
+IDR_TEXT18              TEXT                    "..\\ASCII frame\\frame16.txt"
+
+IDR_TEXT19              TEXT                    "..\\ASCII frame\\frame17.txt"
+
+IDR_TEXT20              TEXT                    "..\\ASCII frame\\frame18.txt"
+
+IDR_TEXT21              TEXT                    "..\\ASCII frame\\frame19.txt"
+
+IDR_TEXT22              TEXT                    "..\\ASCII frame\\frame20.txt"
+
+IDR_TEXT23              TEXT                    "..\\ASCII frame\\frame21.txt"
+
+IDR_TEXT24              TEXT                    "..\\ASCII frame\\frame22.txt"
+
+IDR_TEXT25              TEXT                    "..\\ASCII frame\\frame23.txt"
+
+IDR_TEXT26              TEXT                    "..\\ASCII frame\\frame24.txt"
+
+IDR_TEXT27              TEXT                    "..\\ASCII frame\\frame25.txt"
+
+IDR_TEXT28              TEXT                    "..\\ASCII frame\\frame26.txt"
+
+IDR_TEXT29              TEXT                    "..\\ASCII frame\\frame27.txt"
+
+IDR_TEXT30              TEXT                    "..\\ASCII frame\\frame28.txt"
+
+IDR_TEXT31              TEXT                    "..\\ASCII frame\\frame29.txt"
+
+IDR_TEXT32              TEXT                    "..\\ASCII frame\\frame30.txt"
+
+IDR_TEXT33              TEXT                    "..\\ASCII frame\\frame31.txt"
+
+IDR_TEXT34              TEXT                    "..\\ASCII frame\\frame32.txt"
+
+IDR_TEXT35              TEXT                    "..\\ASCII frame\\frame33.txt"
 
 
 /////////////////////////////////////////////////////////////////////////////
