@@ -20,6 +20,11 @@ void Game::HotKeys(int& button)
 	}
 }
 
+void Game::DrawMovie()
+{
+
+}
+
 void Game::DrawArea()
 {
 	// Set console code page to UTF-8 so console known how to interpret string data

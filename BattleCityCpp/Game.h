@@ -147,6 +147,8 @@ protected:
 
     void HotKeys(int& button);
 
+    void DrawMovie();
+
     void DrawArea();
 
     void MainMenu();
