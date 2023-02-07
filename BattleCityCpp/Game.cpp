@@ -41,6 +41,7 @@ void Game::DrawMovie()
 			if (hLoadedResource)
 			{
 				LPCSTR movie = (LPCSTR)LockResource(hLoadedResource);
+				LPCSTR moviePrev = movie;
 
 				if (movie)
 				{
