@@ -1,39 +1,24 @@
-         [           .     .                      .⌐."╨─ `,   .                 
-
-    -,   [           ;    ..                     .;'. ∩`  `     .             ] 
-
-     ¡``"|         .¡¡;   ''                           ;─┘        :─         -] 
-
-   `:¡└∩.ç   ,,`¡¿"¡un¡,  `;;        '               ``:└       ┌∩`¡,    v¡¿/─▐w
-
-     .,ⁿ¡à,'`u¿u└w∞wo┴¿µ┘]µ~⌐-`      -   └▀#H0╝^ ;⌐     ,     ─┘ⁿ┌µi┴,vB╝D#ÄÉ╓▐┴
-
-      ^z»É¿xxj*o⌂¥½ααΩç∞┐7²v∩-.     └=~. å▀▀▀▀▀Ω*▀~⌐.,        .v┴]╖U╥BqZ╦qφg╠M▐u
-
-;. -  )ΦΦ╠(í╤╧≤yóqæMÇΩΩ╓ç∞╕çpk~> :╠▀▌▌▀▀▀▀▀▀▀▀M╠▀▀▀U `:...     `⌐/AƒM╩ªN║░╗N╢$▐σ
-
-▄#g░@@@@@╠d▄ggNæqg0æ╔q╖╖╓⌂çfΩççù Ñ▌█▒▒██▌▄▄█L▌α▌▒█▌▌,       ..,┌µç╪9D╝U║╫0╣GÅ@▐¼
-
-▄▄▄Öd╦Çq$▐%▌¢q╥qÉ$╗╦D╩ñÖ╩╩╨╖╖╩╖]██▒▒████▓███▓██▒▒▌▌▌▀     ,;\¿µy6╥Çqd▄▄▐Ñ╢Ñ╠▐▌▌▄
-
-ÅÅ&Ü$H▄gd╢╦╠╠▀▀▀╢Ñ▄å▄╗╗g▄▄╢▄▄▌▌▌▌▌▌▒▒▒▒▒▒▒▌▌▌▌ÑÑÑ▄▄É¿┌   ¡,╘@▌▐▀╣▀Ä╫▀▀▀▌█▀█▌▌▒▒╢
-
-╣Å▄#▄▄▄▐▐╫åÅ╠░Å▌▌▌å╢Ç╘╫╢▌▌▌▌██▒▌▌▌▒▌▒▒█▒▒▒▒▒▒▒▒▒▒███M╕ ]▓;` ▌██▌██µ╚gƒ╩░█▀▌▒▒Å▒Å
-
-░░φ╗░▐╠╫╢Å╫▌▀▌▌▒▒▌&ÖS¿d██▌▒████▓██▒▒▒▒▒▒▒█▒▒▒▒██████▌▌o]▒w  ▐█▒██▒▒██████▌▌▌▒╢█▀
-
-╠Å▀Å╣╫Ñ▀Ñ▌Ñ▌▌▌▌▌▌▌]▀▄ååÑ▒Ñ░▒▒▒▒▒▌Ñ▀ÑÑÑÑ▀▀▌▌▀▀▀▌▒▒▒▒▒▀Ñå▀▀Ω¡▄▄▄▄▒▒▒▒▒▒▒▒██▒▒▌▌▌█▌
-
-▄░£░░▄&▐å╠╬Å▀Å▀▀åÄJÑ▀Ñ▌▌▌▌▀Ñ▄╠▄▄¢g░Ü╦╗g▄▄╠▄▄╫Ñ▌▌▌▌▒▌▒▌█▒▒▀▌▌▌▒▓▓▒▒▒▒▒▒▒▒▌▌▌Ñ▌▌▌▌
-
-g▐æq╗╗qÄ░HφÇÄ£U9¼W4å▌██████▒▒▒▒▒▒▒█▒▒▒▒▒▒▒▒▒▒▒▒▒█▒██▌█▌▌▌Ñ▌█▒Ñ▒▀▀▀▀▀▀▀▀▌▌▒▒▒▒▒▒▒
-
-&@Φδ╡î╡YJ]Q⌠╨]╨╪╧╜¥qÑ▒██▒▒▒▒▒█▒▒█▒▒▒▒▒▒▒▒█▒███▒▒▒▒█▒████╠Ñ███▄▌Ç╙╨╨╨╩áZª#å%░▀▀▀å
-
-Ågq⌂╓mQ╖¼q╥£â╦╗gα╖d$▀▌▀▌Ñ▌█▌▒███▒█████████████████▓█▒▓██▌╠▐╢▀▒▌╠╠%╬$░Φæææ▄Ç╦▄╢gæ
-
-ÅÅ▀╠╠gÜ▐#▐╣╢▄▄╫╣▀&▄▄╠▄╢▀▀Å▀▌▀▒▌▀å░ÑÅåÅÑÅ▒▒▒▒▒▒▌▀▒▒▓▒█▒▓▌▌Ü²▐║b▌▄g▐▀▀╫å▄▐▌ÅÑÑåÅ╠░
-
-╔gæ░▐▄▄╢▀╠▌▀╢Ñ▌▀å░åå░░Ö╢▌▌▌&║▐▀&H╝AÖ╛zÜ▀░ª▄▀▐▀░╨╖Jñ┤░╩Üà╝╡ñÉCÖ░Æƒóg¢αHgqÜÉ&É£HDg
-
-]ñ#░ñ▐åÜ░ñ¢å░æ▀░M░░ÜÖÉÑ▌&ÑÑ▀╠╨╒ⁿ|¿╕²╒µⁿyi▄▀█╢▄É╨╩╓NMJ┐╝q▐ñª▄d├GH▄#▄g▄▀╫╫▀▌╠╫▐H▄▄
+#BGGGG5?Y?JY?YGB##B##BBGGGGGGGGGGB###G5555555555555555555GGGGB&#PG?77JY5GB#BBBBGBGB#P55555
+5GB#BGY?Y??Y?YGPY?7BB######BB#####BG5YY55555555555555555P#&BBBGPPP?77777?5GPPPPGP?PB555Y55
+!!7?YGY?Y??Y7YG7!!7#GGGGGGGGGPYGGP55555Y555555555555Y55PP##PPPPPPP?77777?JGPPGPY77?BBP5555
+!!!!7GY?Y??Y7YG7~~~JBBGPP5JJJ?!7YPPPPP555555555YY555555P##GPPPPPGP?777777?JYYJ7777J5BBBGPP
+!!!!?GY7Y??Y7JG?~~~!GBGPP5YJJ?7777Y##PPP5YYYY55PP55PPGBBGPPPPPPPPY77777777777777?5GP5PGGBB
+~~~~?GJ7Y??Y7JGJ~~~GBGPPP5YJJ7777Y&#BPPPP55555B#BBBB#B5?77?JJYYJ?7777777777??77JPGPG######
+~~~~JGJ7Y??57JGJ~~~GBGPPPPYJYJ777B#B#BBGBGGGGB&BPPPPPPPPY?7777777777777777J??JPGPPG&BBBPPG
+~~~^JGJ7Y??57JGY~~~!PBBGPP5YJJ?77G&&BP5YGBP55G#&PPPPPPPPPP5Y?777777777777Y?JPGPPGG&#G#PB#B
+^^^:JGJ7Y??57JPY~~~~~75#GPG5JJJ7!J&&&B#5#&GP##&BGGGGGPPPPPPPPY?7??77?777YJJPGPGGG#&GBGG#GP
+^^^^YPJ7Y??57JP5^^^^^^!#GPPP5555Y###GJB&GGB&GJB##&BGGGGGPPPPGGPJ?J77J?7JY?5GGGGGB&GG#PG#GP
+^^^^YPJ7Y?757?P5^^^^^^^7GBGGBBGP#&BPBP&BBGBB&5#GP&&BGGGGGGGGBBGP?JJ7Y?75?JPGGGPY#BGBB5PB#B
+^^^^5P?7Y?7Y7?5P^^^^^^^:^~7?7!^^#BBG&#&#####&#&GGB#5BBBBBBBBP7~PY?Y7Y??Y7JG?~^^^P##&BGGGB#
+7777P5?7Y?7Y7?5P~^^^^^^^^^:::::7#PBB###########BBP#^^~7???!~^:^YP?Y?Y?YJ?JG!:^:^5&&&&&&&BB
+YYYYG5?7Y77Y7?YG7!~~^^::::^!?JYB&&YPB##BBBB###BJP#&PJ?7!^::::::?P?YJY?YJ?JG!:~YBBGGGGGBJB&
+5555G5?7Y77Y7?YGY??77!!~^:P&&&&#GB7@@5P@@@@&5G@B?#G#&&&&?.:::::?P?YJY?Y??JG?YBBP55555PPP@@
+5555GY?7Y77Y7?YGP555YYYYY5#####&#BY@B..&@@@Y ^@&5#&&B##&P77!^::JP7JJY?Y?7JB#BPPPP5PPPG55&&
+YYJYGY?7Y77Y??JGP55555&#BB####&&BPJ?YY5PPPPP55YJYG#&&###BGB#5:^557YJ5Y55YP&&###B&B5PPPPPPG
+JJJYGY?7Y77J??JGPYY555PPPP#&&&&&GGGY!!!!!!!!!!!YGGB&&&&&P77?7!?GY7Y5&GPPPP555555&&5PPPPPG#
+JJJ5GJ?7J77J??JPPJJJJYYYY#######BGB#G7!!!!!!!?B&BG######&G??JYPP?7Y5&BGGGBBBBBBB#&555555G#
+JJJ5GJ?7J77???JPPJJJJJJJY#####&&####&BPPPPPPP#&###&&&#####555PGJ?757G&####BBBB#&#&########
+7775PJ?7?77????5GYJJJJJJY#####&&#BB#BPPPPPPPPPBBGG#&&#####555GY?7?Y!Y&#GGBBBBG#&&&&&&&&&&&
+77?5PJ77?777?!?JPJJJJJJJY#####&&#B#&&#########&&#B&&&#####Y5G5?77Y?75&#BBBBBBB#&&&&&&&&&&&
+775JP7^~~^^~!^!!?7777???J######YPPPPPPPPGGGGGPPPPPP5&####BYP5?777Y77Y##BBBBBBB##P#######&&
+77?G5?777777777JP57777777######YJJJJJJJJJJJJJJJJJJJ5&#####PY?777J77?J##BBBBBBB##77777777??

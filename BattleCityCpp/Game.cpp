@@ -28,7 +28,10 @@ void Game::DrawMovie()
 	// Enable buffering to prevent VS from chopping up UTF-8 byte sequences
 	setvbuf(stdout, nullptr, _IOFBF, 1000);
 	
+	int mRows = 25, mCols = 91, currentX = 1, currentY = 1;
+
 	int filesCnt = 33;
+	LPSTR prevMovie;
 
 	for (int resId = 110; resId < 110 + filesCnt; resId++)
 	{
@@ -40,8 +43,7 @@ void Game::DrawMovie()
 
 			if (hLoadedResource)
 			{
-				LPCSTR movie = (LPCSTR)LockResource(hLoadedResource);
-				LPCSTR moviePrev = movie;
+				LPSTR movie = (LPSTR)LockResource(hLoadedResource);
 
 				if (movie)
 				{
@@ -49,18 +51,28 @@ void Game::DrawMovie()
 
 					if (0 != dwResourceSize)
 					{
-						for (int i = 0; i < strnlen(movie, 80 * 39); i++) {
+						for (int i = 0; i < strnlen(movie, 90 * 25); i++) {
+
+							if (currentX > mCols) currentY++, currentX = 0;
+
+							SetPos(currentX, currentY);
+							currentX++;
+
+							if (resId)
+							//if (movie[i] == prevMovie[i]) continue;
 							cout << movie[i];
 						}
+						prevMovie = movie;
+						currentY = 0, currentX = 0;
 					}
 				}
 			}
 		}
-
+		Sleep(200);
 	}
 
 	setvbuf(stdout, NULL, _IONBF, 0);
-
+	system("cls");
 }
 
 void Game::DrawArea()
