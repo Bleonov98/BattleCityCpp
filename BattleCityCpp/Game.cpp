@@ -370,7 +370,16 @@ void Game::Preparing()
 
 void Game::SpawnPlayer(int& objectID, int x, int y, int color)
 {
-	Player* player = new Player(&wData, x, y, color);
+	Player* player;
+	if (level == 0) {
+		player = new Player(&wData, x, y, color);
+		savePl = player;
+	}
+	else {
+		player = savePl;
+		player->SetX(x);
+		player->SetY(y);
+	}
 
 	allObjectList.push_back(player);
 	playerList.push_back(player);
@@ -815,9 +824,15 @@ void Game::RunWorld(bool& restart)
 		drawing.join();
 
 		if (!gameEnd) {
-			tick = 0, charID = 0, spawnTick = 1, enemyCnt = 9, win = false, worldIsRun = true, level++;
+			tick = 0, charID = 0, spawnTick = 9, enemyCnt = 1, worldIsRun = true;
 
 			ClearData();
+			
+			if (level == 1) {
+				win = true;
+				break;
+			}
+			else level++;
 
 			CreateMap();
 		}

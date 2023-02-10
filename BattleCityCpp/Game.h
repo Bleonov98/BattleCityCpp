@@ -10,7 +10,7 @@ private:
     char coord[100];
 
     bool worldIsRun = true, win = false, singlePlayer = true, exit = false, gameEnd = false;
-    int score = 0, enemyCnt = 1, level = 0;
+    int score = 0, enemyCnt = 9, level = 0;
     
     // --------- CONNECTION SETTINGS ---------
 
@@ -140,6 +140,7 @@ private:
     vector <Enemy*> enemyList;
 
     Bullet* bullet;
+    Player* savePl;
 
 protected:
 
