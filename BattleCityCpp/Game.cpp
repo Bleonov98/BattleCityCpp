@@ -646,6 +646,10 @@ void Game::CreateMap()
 void Game::ClearData()
 {
 	system("cls");
+
+	DrawArea();
+	SetGridState();
+
 	allObjectList.clear();
 	wallList.clear();
 	playerList.clear();
