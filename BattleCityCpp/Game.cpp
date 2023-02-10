@@ -643,6 +643,20 @@ void Game::CreateMap()
 	}
 }
 
+void Game::ClearData()
+{
+	system("cls");
+	allObjectList.clear();
+	wallList.clear();
+	playerList.clear();
+	enemyList.clear();
+	characterList.clear();
+	bonusList.clear();
+	bulletList.clear();
+
+	characterList.resize(50);
+}
+
 void Game::SetWall(int x, int y, int type)
 {
 	Wall* wall = new Wall(&wData, x, y, BrRed);
@@ -727,6 +741,11 @@ void Game::RunWorld(bool& restart)
 
 	int tick = 0, charID = 0, spawnTick = 1, button = NOKEY;
 
+	thread pressKeys([&] {
+		HotKeys(button);
+		});
+	pressKeys.detach();
+
 	do
 	{
 		SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
@@ -734,11 +753,7 @@ void Game::RunWorld(bool& restart)
 
 		thread drawing([&] {
 			DrawChanges();
-			});
-		thread pressKeys([&] {
-			HotKeys(button);
-			});
-		pressKeys.detach();
+		});
 
 		Sleep(1500);
 
@@ -794,16 +809,14 @@ void Game::RunWorld(bool& restart)
 		}
 
 		drawing.join();
+
 		if (!gameEnd) {
 			tick = 0, charID = 0, spawnTick = 1, enemyCnt = 9, win = false, worldIsRun = true, level++;
 
-			system("cls");
-			wallList.clear();
+			ClearData();
 
 			CreateMap();
 		}
-
-
 
 	} while (!gameEnd);
 

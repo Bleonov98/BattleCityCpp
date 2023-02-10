@@ -9,8 +9,8 @@ private:
     char16_t prevBuf[ROWS][COLS];
     char coord[100];
 
-    bool worldIsRun = false, win = false, singlePlayer = true, exit = false, gameEnd = false;
-    int score = 0, enemyCnt = 9, level = 0;
+    bool worldIsRun = true, win = false, singlePlayer = true, exit = false, gameEnd = false;
+    int score = 0, enemyCnt = 1, level = 0;
     
     // --------- CONNECTION SETTINGS ---------
 
@@ -182,6 +182,8 @@ protected:
     void CheckCollision();
 
     void CreateMap();
+    
+    void ClearData();
 
     void SetWall(int x, int y, int type);
 
