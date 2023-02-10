@@ -572,6 +572,72 @@ void Game::CheckCollision()
 void Game::CreateMap()
 {
 	if (level == 0) {
+
+		SetWall(2, 20, STEEL);
+		SetWall(COLS - 7, 20, STEEL);
+
+		SetWall(5, 5, BRICK);
+		SetWall(5, 11, BRICK);
+		SetWall(5, 34, BRICK);
+		SetWall(5, 40, BRICK);
+
+		SetWall(14, 5, BRICK);
+		SetWall(14, 11, BRICK);
+		SetWall(14, 34, BRICK);
+		SetWall(14, 40, BRICK);
+
+		SetWall(17, 20, BRICK);
+		SetWall(23, 20, BRICK);
+
+		SetWall(47, 8, STEEL);
+
+		SetWall(23, 5, BRICK);
+		SetWall(23, 11, BRICK);
+		SetWall(23, 34, BRICK);
+		SetWall(23, 40, BRICK);
+
+		SetWall(32, 5, BRICK);
+		SetWall(32, 11, BRICK);
+		SetWall(32, 20, BRICK);
+		SetWall(32, 29, BRICK);
+		SetWall(32, 35, BRICK);
+
+		SetWall(41, 5, BRICK);
+		SetWall(41, 11, BRICK);
+
+		SetWall(47, 8, STEEL);
+
+		SetWall(53, 5, BRICK);
+		SetWall(53, 11, BRICK);
+		SetWall(51, 20, BRICK);
+		SetWall(51, 29, BRICK);
+		SetWall(51, 35, BRICK);
+
+		SetWall(60, 20, BRICK);
+		SetWall(66, 20, BRICK);
+
+		SetWall(62, 5, BRICK);
+		SetWall(62, 11, BRICK);
+		SetWall(62, 34, BRICK);
+		SetWall(62, 40, BRICK);
+
+		SetWall(71, 5, BRICK);
+		SetWall(71, 11, BRICK);
+		SetWall(71, 34, BRICK);
+		SetWall(71, 40, BRICK);
+
+		SetWall(80, 5, BRICK);
+		SetWall(80, 11, BRICK);
+		SetWall(80, 34, BRICK);
+		SetWall(80, 40, BRICK);
+
+		SetWall(COLS / 2 - 4, ROWS - 21, BRICK);
+		SetWall(COLS / 2 - 4, ROWS - 15, BRICK);
+
+		SetWall(COLS / 2 - 1, ROWS - 4, BASE);
+		SetWall(COLS / 2 - 4, ROWS - 6, BASEBRICK);
+	}
+	else if (level == 1) {
 		SetWall(5, 5, BRICK);
 		SetWall(5, 11, BRICK);
 		SetWall(5, 17, BRICK);
@@ -647,18 +713,11 @@ void Game::CreateMap()
 		SetWall(COLS / 2 - 1, ROWS - 4, BASE);
 		SetWall(COLS / 2 - 4, ROWS - 6, BASEBRICK);
 	}
-	else if (level == 1) {
-
-	}
+	DrawToMem();
 }
 
 void Game::ClearData()
 {
-	system("cls");
-
-	DrawArea();
-	SetGridState();
-
 	allObjectList.clear();
 	wallList.clear();
 	playerList.clear();
@@ -668,6 +727,16 @@ void Game::ClearData()
 	bulletList.clear();
 
 	characterList.resize(50);
+
+	for (int i = 2; i < ROWS - 1; i++)
+	{
+		for (int j = 2; j < COLS - 1; j++)
+		{
+			wData.vBuf[i][j] = u' ';
+		}
+	}
+	SetGridState();
+	CreateMap();
 }
 
 void Game::SetWall(int x, int y, int type)
@@ -762,7 +831,6 @@ void Game::RunWorld(bool& restart)
 	do
 	{
 		SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
-		DrawToMem();
 
 		thread drawing([&] {
 			DrawChanges();
@@ -784,7 +852,7 @@ void Game::RunWorld(bool& restart)
 			} // player move
 
 			if (enemyList.size() < 3 && tick % 95 == 0 && enemyCnt != 0) {
-				int eX, eY;
+				int eX = 2, eY = 2;
 
 				if (spawnTick == 1) eX = 2, eY = 2;
 				else if (spawnTick == 2) eX = COLS / 2, eY = 2;
@@ -824,9 +892,7 @@ void Game::RunWorld(bool& restart)
 		drawing.join();
 
 		if (!gameEnd) {
-			tick = 0, charID = 0, spawnTick = 9, enemyCnt = 9, worldIsRun = true;
-
-			ClearData();
+			tick = 0, charID = 0, spawnTick = 1, enemyCnt = 9, worldIsRun = true;
 			
 			if (level == 1) {
 				win = true;
@@ -834,7 +900,7 @@ void Game::RunWorld(bool& restart)
 			}
 			else level++;
 
-			CreateMap();
+			ClearData();
 		}
 
 	} while (!gameEnd);
