@@ -449,8 +449,7 @@ void Game::WallCollision()
 					if (wallList[wall]->GetY() + wlHeight == bulletList[bullet]->GetY() && wallList[wall]->GetX() + wlWidth == bulletList[bullet]->GetX()) {
 
 						if (wallList[wall]->GetWallType() == BASE) {
-							win = false;
-							worldIsRun = false;
+							worldIsRun = false, gameEnd = true, win = false;
 							PlaySound(MAKEINTRESOURCE(IDR_WAVE5), NULL, SND_RESOURCE | SND_ASYNC);
 
 							wallList[wall]->DeleteObject();
@@ -515,7 +514,6 @@ void Game::BulletCollision()
 
 						score += 25;
 						if (enemyList[enemy]->BonusKeeper()) SpawnBonus();
-						if (enemyCnt == 0 && enemyList.empty()) worldIsRun = false, win = true;
 
 						brk = true;
 					}
@@ -564,81 +562,85 @@ void Game::CheckCollision()
 
 void Game::CreateMap()
 {
-	SetWall(5, 5, BRICK);
-	SetWall(5, 11, BRICK);
-	SetWall(5, 17, BRICK);
+	if (level == 0) {
+		SetWall(5, 5, BRICK);
+		SetWall(5, 11, BRICK);
+		SetWall(5, 17, BRICK);
 
-	SetWall(14, 5, BRICK);
-	SetWall(14, 11, BRICK);
-	SetWall(14, 17, BRICK);
-			
-	SetWall(23, 5, BRICK);
-	SetWall(23, 11, BRICK);
-	SetWall(23, 17, BRICK);
+		SetWall(14, 5, BRICK);
+		SetWall(14, 11, BRICK);
+		SetWall(14, 17, BRICK);
 
-	SetWall(32, 5, BRICK);
-	SetWall(32, 11, BRICK);
-	SetWall(32, 17, BRICK);
+		SetWall(23, 5, BRICK);
+		SetWall(23, 11, BRICK);
+		SetWall(23, 17, BRICK);
 
-	SetWall(41, 5, BRICK);
-	SetWall(41, 11, BRICK);
-	SetWall(41, 17, BRICK);
+		SetWall(32, 5, BRICK);
+		SetWall(32, 11, BRICK);
+		SetWall(32, 17, BRICK);
 
-	SetWall(50, 5, BRICK);
-	SetWall(50, 11, BRICK);
-	SetWall(50, 17, BRICK);
+		SetWall(41, 5, BRICK);
+		SetWall(41, 11, BRICK);
+		SetWall(41, 17, BRICK);
 
-	SetWall(59, 5, BRICK);
-	SetWall(59, 11, BRICK);
-	SetWall(59, 17, BRICK);
+		SetWall(50, 5, BRICK);
+		SetWall(50, 11, BRICK);
+		SetWall(50, 17, BRICK);
 
-	SetWall(68, 5, BRICK);
-	SetWall(68, 11, BRICK);
-	SetWall(68, 17, BRICK);
+		SetWall(59, 5, BRICK);
+		SetWall(59, 11, BRICK);
+		SetWall(59, 17, BRICK);
 
-	SetWall(77, 5, BRICK);
-	SetWall(77, 11, BRICK);
-	SetWall(77, 17, BRICK);
+		SetWall(68, 5, BRICK);
+		SetWall(68, 11, BRICK);
+		SetWall(68, 17, BRICK);
 
-
-	SetWall(5, 23, WATER);
-	SetWall(11, 23, WATER);
-	SetWall(17, 23, WATER);
-	SetWall(23, 23, WATER);
-
-	SetWall(59, 23, WATER);
-	SetWall(65, 23, WATER);
-	SetWall(71, 23, WATER);
-	SetWall(77, 23, WATER);
-
-	SetWall(83, 5, GRASS);
-	SetWall(83, 11, GRASS);
-	SetWall(83, 17, GRASS);
-	SetWall(83, 23, GRASS);
-	SetWall(83, 29, GRASS);
-	SetWall(83, 35, GRASS);
-	SetWall(83, 40, GRASS);
+		SetWall(77, 5, BRICK);
+		SetWall(77, 11, BRICK);
+		SetWall(77, 17, BRICK);
 
 
-	SetWall(2, ROWS - 13, ICE);
-	SetWall(8, ROWS - 13, ICE);
-	SetWall(14, ROWS - 13, ICE);
-	SetWall(20, ROWS - 13, ICE);
-	SetWall(26, ROWS - 13, ICE);
-	SetWall(32, ROWS - 13, ICE);
-	SetWall(38, ROWS - 13, ICE);
-	SetWall(44, ROWS - 13, ICE);
-	SetWall(50, ROWS - 13, ICE);
-	SetWall(56, ROWS - 13, ICE);
-	SetWall(62, ROWS - 13, ICE);
-	SetWall(68, ROWS - 13, ICE);
+		SetWall(5, 23, WATER);
+		SetWall(11, 23, WATER);
+		SetWall(17, 23, WATER);
+		SetWall(23, 23, WATER);
 
-	SetWall(74, ROWS - 13, STEEL);
-	SetWall(74, ROWS - 7, STEEL);
+		SetWall(59, 23, WATER);
+		SetWall(65, 23, WATER);
+		SetWall(71, 23, WATER);
+		SetWall(77, 23, WATER);
 
-	SetWall(COLS / 2 - 1, ROWS - 4, BASE);
-	SetWall(COLS / 2 - 4, ROWS - 6, BASEBRICK);
+		SetWall(83, 5, GRASS);
+		SetWall(83, 11, GRASS);
+		SetWall(83, 17, GRASS);
+		SetWall(83, 23, GRASS);
+		SetWall(83, 29, GRASS);
+		SetWall(83, 35, GRASS);
+		SetWall(83, 40, GRASS);
 
+
+		SetWall(2, ROWS - 13, ICE);
+		SetWall(8, ROWS - 13, ICE);
+		SetWall(14, ROWS - 13, ICE);
+		SetWall(20, ROWS - 13, ICE);
+		SetWall(26, ROWS - 13, ICE);
+		SetWall(32, ROWS - 13, ICE);
+		SetWall(38, ROWS - 13, ICE);
+		SetWall(44, ROWS - 13, ICE);
+		SetWall(50, ROWS - 13, ICE);
+		SetWall(56, ROWS - 13, ICE);
+		SetWall(62, ROWS - 13, ICE);
+		SetWall(68, ROWS - 13, ICE);
+
+		SetWall(74, ROWS - 13, STEEL);
+		SetWall(74, ROWS - 7, STEEL);
+
+		SetWall(COLS / 2 - 1, ROWS - 4, BASE);
+		SetWall(COLS / 2 - 4, ROWS - 6, BASEBRICK);
+	}
+	else if (level == 1) {
+
+	}
 }
 
 void Game::SetWall(int x, int y, int type)
@@ -724,71 +726,86 @@ void Game::RunWorld(bool& restart)
 	CreateWorld();
 
 	int tick = 0, charID = 0, spawnTick = 1, button = NOKEY;
-	worldIsRun = true;
 
-	SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
-	DrawToMem();
-
-	thread drawing([&] {
-		DrawChanges();
-	});
-	thread pressKeys([&] {
-		HotKeys(button);
-	});
-	pressKeys.detach();
-
-	Sleep(1500);
-
-	while (worldIsRun) {
-
-		for (int i = 0; i < playerList.size(); i++)
-		{
-			if (tick % playerList[i]->GetSpeed() == 0) {
-				playerList[i]->MoveObject(button);
-
-				if (button == SPACEKEY) {
-					playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
-				}
-			}
-		} // player move
-
-		if (enemyList.size() < 3 && tick % 95 == 0 && enemyCnt != 0) {
-			int eX, eY;
-
-			if (spawnTick == 1) eX = 2, eY = 2;
-			else if (spawnTick == 2) eX = COLS / 2, eY = 2;
-			else if (spawnTick == 3) eX = COLS - 4, eY = 2;
-
-			SpawnEnemy(charID, eX, eY);
-			spawnTick++;
-			if (spawnTick > 3) spawnTick = 1;
-		}
-
-		for (int i = 0; i < enemyList.size(); i++)
-		{
-			if (tick % enemyList[i]->GetSpeed() == 0) enemyList[i]->MoveObject(NOKEY);
-			if (enemyList[i]->CheckAhead()) enemyList[i]->Shot(allObjectList, bulletList, bullet, ENEMY);
-		}
-
-		for (int i = 0; i < bulletList.size(); i++)
-		{
-			if (tick % bulletList[i]->GetSpeed() == 0) {
-				bulletList[i]->MoveObject(NOKEY);
-			}
-		} // bullet move
-
-		CheckCollision();
-
+	do
+	{
+		SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
 		DrawToMem();
 
-		Sleep(20);
+		thread drawing([&] {
+			DrawChanges();
+			});
+		thread pressKeys([&] {
+			HotKeys(button);
+			});
+		pressKeys.detach();
 
-		tick++;
+		Sleep(1500);
 
-		if (button == ESCKEY) worldIsRun = false;
-		if (playerList.size() <= 0) worldIsRun = false, win = false;
-	}
-	drawing.join();
+		while (worldIsRun) {
+
+			for (int i = 0; i < playerList.size(); i++)
+			{
+				if (tick % playerList[i]->GetSpeed() == 0) {
+					playerList[i]->MoveObject(button);
+
+					if (button == SPACEKEY) {
+						playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
+					}
+				}
+			} // player move
+
+			if (enemyList.size() < 3 && tick % 95 == 0 && enemyCnt != 0) {
+				int eX, eY;
+
+				if (spawnTick == 1) eX = 2, eY = 2;
+				else if (spawnTick == 2) eX = COLS / 2, eY = 2;
+				else if (spawnTick == 3) eX = COLS - 4, eY = 2;
+
+				SpawnEnemy(charID, eX, eY);
+				spawnTick++;
+				if (spawnTick > 3) spawnTick = 1;
+			}
+
+			for (int i = 0; i < enemyList.size(); i++)
+			{
+				if (tick % enemyList[i]->GetSpeed() == 0) enemyList[i]->MoveObject(NOKEY);
+				if (enemyList[i]->CheckAhead()) enemyList[i]->Shot(allObjectList, bulletList, bullet, ENEMY);
+			}
+
+			for (int i = 0; i < bulletList.size(); i++)
+			{
+				if (tick % bulletList[i]->GetSpeed() == 0) {
+					bulletList[i]->MoveObject(NOKEY);
+				}
+			} // bullet move
+
+			CheckCollision();
+
+			DrawToMem();
+
+			Sleep(20);
+
+			tick++;
+
+			if (button == ESCKEY) worldIsRun = false;
+			if (playerList.size() <= 0) worldIsRun = false, win = false, gameEnd = true;
+			if (enemyCnt == 0 && enemyList.empty()) worldIsRun = false, win = true;
+		}
+
+		drawing.join();
+		if (!gameEnd) {
+			tick = 0, charID = 0, spawnTick = 1, enemyCnt = 9, win = false, worldIsRun = true, level++;
+
+			system("cls");
+			wallList.clear();
+
+			CreateMap();
+		}
+
+
+
+	} while (!gameEnd);
 
 	DrawEndInfo(restart, button);
 

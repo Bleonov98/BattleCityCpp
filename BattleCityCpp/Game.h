@@ -9,8 +9,8 @@ private:
     char16_t prevBuf[ROWS][COLS];
     char coord[100];
 
-    bool worldIsRun = false, win = false, singlePlayer = true, exit = false;
-    int score = 0, enemyCnt = 9;
+    bool worldIsRun = false, win = false, singlePlayer = true, exit = false, gameEnd = false;
+    int score = 0, enemyCnt = 9, level = 0;
     
     // --------- CONNECTION SETTINGS ---------
 
