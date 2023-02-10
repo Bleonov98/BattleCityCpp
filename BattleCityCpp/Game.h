@@ -10,7 +10,7 @@ private:
     char coord[100];
 
     bool worldIsRun = false, win = false, singlePlayer = true, exit = false;
-    int score = 0, enemyCnt = 31;
+    int score = 0, enemyCnt = 9;
     
     // --------- CONNECTION SETTINGS ---------
 
@@ -157,7 +157,7 @@ protected:
 
     void DrawToMem();
 
-    void DrawEndInfo(bool& restart, int button);
+    void DrawEndInfo(bool& restart, int &button);
 
     void DrawInfo();
 

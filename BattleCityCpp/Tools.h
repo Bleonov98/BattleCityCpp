@@ -87,5 +87,6 @@ enum Buttons {
 	ESCKEY,
 	SPACEKEY,
 	RETURNKEY,
+	RESTARTKEY,
 	NOKEY
 };

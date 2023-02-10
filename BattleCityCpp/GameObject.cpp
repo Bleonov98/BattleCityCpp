@@ -323,16 +323,16 @@ bool Enemy::CheckAhead()
 
 void Enemy::MoveToBase()
 {
-	if (_y <= basePos.second - (VISIBLE_RADIUS - 10) && _x + 1 < basePos.first) {
+	if (_y <= basePos.second - VISIBLE_RADIUS && _x + 1 < basePos.first) {
 		_dir = RIGHT;
 		_x++;
 	}
-	else if (_y <= basePos.second - (VISIBLE_RADIUS - 10) && _x + 1 > basePos.first) {
+	else if (_y <= basePos.second - VISIBLE_RADIUS && _x + 1 > basePos.first) {
 		_dir = LEFT;
 		_x--;
 	}
 	else if (_x + 1 == basePos.first) _dir = BOT;
-	else if (_y > basePos.second - (VISIBLE_RADIUS / 2) && _y < ROWS - _height - 1) {
+	else if (_y > basePos.second - VISIBLE_RADIUS && _y < ROWS - _height - 1) {
 		_dir = BOT;
 		_y++;
 	}

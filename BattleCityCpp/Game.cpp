@@ -17,6 +17,8 @@ void Game::HotKeys(int& button)
 		else if (GetAsyncKeyState(VK_RETURN) & 0x8000) button = RETURNKEY;
 		else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) button = ESCKEY;
 		else button = NOKEY;
+
+		this_thread::sleep_for(chrono::milliseconds(1));
 	}
 }
 
@@ -28,10 +30,12 @@ void Game::DrawMovie()
 	// Enable buffering to prevent VS from chopping up UTF-8 byte sequences
 	setvbuf(stdout, nullptr, _IOFBF, 1000);
 	
-	int mRows = 25, mCols = 91, currentX = 1, currentY = 1;
+	int mRows = 31, mCols = 122, currentX = 1, currentY = 1;
 
-	int filesCnt = 33;
+	int filesCnt = 22;
 	LPSTR prevMovie;
+
+	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
 
 	for (int resId = 110; resId < 110 + filesCnt; resId++)
 	{
@@ -51,9 +55,9 @@ void Game::DrawMovie()
 
 					if (0 != dwResourceSize)
 					{
-						for (int i = 0; i < strnlen(movie, 90 * 25); i++) {
+						for (int i = 0; i < strnlen(movie, 120 * 32); i++) {
 
-							if (currentX > mCols) currentY++, currentX = 0;
+							if (currentX > mCols) currentY++, currentX = 1;
 
 							SetPos(currentX, currentY);
 							currentX++;
@@ -63,12 +67,12 @@ void Game::DrawMovie()
 							cout << movie[i];
 						}
 						prevMovie = movie;
-						currentY = 0, currentX = 0;
+						currentY = 1, currentX = 1;
 					}
 				}
 			}
 		}
-		Sleep(200);
+		Sleep(150);
 	}
 
 	setvbuf(stdout, NULL, _IONBF, 0);
@@ -230,7 +234,7 @@ void Game::CreateWorld() {
 	Preparing();
 }
 
-void Game::DrawEndInfo(bool& restart, int button)
+void Game::DrawEndInfo(bool& restart, int &button)
 {
 	if (win) {
 		SetPos(COLS / 3 + 3, 24);
@@ -240,22 +244,29 @@ void Game::DrawEndInfo(bool& restart, int button)
 		SetPos(COLS / 3 + 12, 24);
 		cout << "GAME OVER!";
 	}
+
 	SetPos(COLS / 3 + 8, 28);
 	cout << "PRESS ESC TO EXIT";
+	SetPos(COLS / 3 + 8, 30);
+	cout << "PRESS R TO RESTART";
 
-	bool pressed = false;
-	restart = false;
-
-	while (!pressed) {
-		if (button == ESCKEY) {
+	while (true)
+	{
+		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
 			restart = false;
-			pressed = true;
+			break;
+		}
+		else if (GetAsyncKeyState(0x52) & 0x8000) {
+			restart = true;
+			break;
 		}
 	}
+	
 }
 
 void Game::DrawInfo()
 {
+	if (playerList.empty()) return;
 	SetPos(COLS + 10, 2);
 	cout << score;
 	SetPos(COLS + 10, 4);
@@ -379,7 +390,7 @@ void Game::SpawnEnemy(int& objectID, int x, int y)
 	objectID++;
 	enemyCnt--;
 
-	if (enemyCnt % 10 == 0) enemy->SetBonusKeeper();
+	if (enemyCnt % 3 == 0) enemy->SetBonusKeeper();
 
 	allObjectList.push_back(enemy);
 	enemyList.push_back(enemy);
@@ -504,6 +515,7 @@ void Game::BulletCollision()
 
 						score += 25;
 						if (enemyList[enemy]->BonusKeeper()) SpawnBonus();
+						if (enemyCnt == 0 && enemyList.empty()) worldIsRun = false, win = true;
 
 						brk = true;
 					}
@@ -710,11 +722,12 @@ void Game::RunWorld(bool& restart)
 {
 	srand(time(NULL));
 	CreateWorld();
-	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC | SND_NOSTOP);
-
 
 	int tick = 0, charID = 0, spawnTick = 1, button = NOKEY;
 	worldIsRun = true;
+
+	SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
+	DrawToMem();
 
 	thread drawing([&] {
 		DrawChanges();
@@ -722,68 +735,62 @@ void Game::RunWorld(bool& restart)
 	thread pressKeys([&] {
 		HotKeys(button);
 	});
+	pressKeys.detach();
 
-	SpawnPlayer(charID, COLS / 2 - 15, ROWS - 4, Red);
+	Sleep(1500);
 
-	if (singlePlayer) {
-		while (worldIsRun) {
+	while (worldIsRun) {
 
-			for (int i = 0; i < playerList.size(); i++)
-			{
-				if (tick % playerList[i]->GetSpeed() == 0) {
-					playerList[i]->MoveObject(button);
+		for (int i = 0; i < playerList.size(); i++)
+		{
+			if (tick % playerList[i]->GetSpeed() == 0) {
+				playerList[i]->MoveObject(button);
 
-					if (button == SPACEKEY) {
-						playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
-					}
+				if (button == SPACEKEY) {
+					playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
 				}
-			} // player move
-
-			if (enemyList.size() < 3 && tick % 95 == 0) {
-				int eX, eY;
-
-				if (spawnTick == 1) eX = 2, eY = 2;
-				else if (spawnTick == 2) eX = COLS/2, eY = 2;
-				else if (spawnTick == 3) eX = COLS - 4, eY = 2;
-
-				SpawnEnemy(charID, eX, eY);
-				spawnTick++;
-				if (spawnTick > 3) spawnTick = 1;
 			}
-			
-			for (int i = 0; i < enemyList.size(); i++)
-			{
-				if (tick % enemyList[i]->GetSpeed() == 0) enemyList[i]->MoveObject(NOKEY);
-				if (enemyList[i]->CheckAhead()) enemyList[i]->Shot(allObjectList, bulletList, bullet, ENEMY);
-			}
+		} // player move
 
-			for (int i = 0; i < bulletList.size(); i++)
-			{
-				if (tick % bulletList[i]->GetSpeed() == 0) {
-					bulletList[i]->MoveObject(NOKEY);
-				}
-			} // bullet move
+		if (enemyList.size() < 3 && tick % 95 == 0 && enemyCnt != 0) {
+			int eX, eY;
 
-			CheckCollision();
+			if (spawnTick == 1) eX = 2, eY = 2;
+			else if (spawnTick == 2) eX = COLS / 2, eY = 2;
+			else if (spawnTick == 3) eX = COLS - 4, eY = 2;
 
-			DrawToMem();
-
-			Sleep(20);
-
-			tick++;
-
-			if (button == ESCKEY) worldIsRun = false;
-			if (playerList.size() <= 0) worldIsRun = false, win = false;
+			SpawnEnemy(charID, eX, eY);
+			spawnTick++;
+			if (spawnTick > 3) spawnTick = 1;
 		}
+
+		for (int i = 0; i < enemyList.size(); i++)
+		{
+			if (tick % enemyList[i]->GetSpeed() == 0) enemyList[i]->MoveObject(NOKEY);
+			if (enemyList[i]->CheckAhead()) enemyList[i]->Shot(allObjectList, bulletList, bullet, ENEMY);
+		}
+
+		for (int i = 0; i < bulletList.size(); i++)
+		{
+			if (tick % bulletList[i]->GetSpeed() == 0) {
+				bulletList[i]->MoveObject(NOKEY);
+			}
+		} // bullet move
+
+		CheckCollision();
+
+		DrawToMem();
+
+		Sleep(20);
+
+		tick++;
+
+		if (button == ESCKEY) worldIsRun = false;
+		if (playerList.size() <= 0) worldIsRun = false, win = false;
 	}
-	else {
-		Sleep(100);
-	}
+	drawing.join();
 
 	DrawEndInfo(restart, button);
-
-	drawing.join();
-	pressKeys.join();
 
 	printf(CSI "?1049l");
 }

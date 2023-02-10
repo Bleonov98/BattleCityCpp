@@ -250,7 +250,7 @@ private:
 	bool _keepBonus = false;
 	pair<int, int> basePos;
  
-	const int VISIBLE_RADIUS = 30;
+	const int VISIBLE_RADIUS = 23;
 	const int VISIBLE_DISTANCE = 45;
 
 	vecPairInt visibleArea;
