@@ -824,7 +824,7 @@ void Game::RunWorld(bool& restart)
 		drawing.join();
 
 		if (!gameEnd) {
-			tick = 0, charID = 0, spawnTick = 9, enemyCnt = 1, worldIsRun = true;
+			tick = 0, charID = 0, spawnTick = 9, enemyCnt = 9, worldIsRun = true;
 
 			ClearData();
 			
