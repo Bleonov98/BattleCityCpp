@@ -6,17 +6,19 @@ void Game::SetPos(int x, int y)
 	printf(coord);
 }
 
-void Game::HotKeys(int& button)
+void Game::HotKeys(int& button, bool &fireButton)
 {
 	while (true) {
 		if (GetAsyncKeyState(VK_UP) & 0x8000) button = UPKEY;
 		else if (GetAsyncKeyState(VK_RIGHT) & 0x8000) button = RIGHTKEY;
 		else if (GetAsyncKeyState(VK_DOWN) & 0x8000) button = DOWNKEY;
 		else if (GetAsyncKeyState(VK_LEFT) & 0x8000) button = LEFTKEY;
-		else if (GetAsyncKeyState(VK_SPACE) & 0x8000) button = SPACEKEY;
 		else if (GetAsyncKeyState(VK_RETURN) & 0x8000) button = RETURNKEY;
 		else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) button = ESCKEY;
 		else button = NOKEY;
+
+		if (GetAsyncKeyState(VK_SPACE) & 0x8000) fireButton = true;
+		else fireButton = false;
 
 		this_thread::sleep_for(chrono::milliseconds(1));
 	}
@@ -30,7 +32,7 @@ void Game::DrawMovie()
 	// Enable buffering to prevent VS from chopping up UTF-8 byte sequences
 	setvbuf(stdout, nullptr, _IOFBF, 1000);
 	
-	int mRows = 31, mCols = 122, currentX = 1, currentY = 1;
+	int mRows = 31, mCols = 122, currentX = 1, currentY = ROWS/4;
 
 	int filesCnt = 22;
 	LPSTR prevMovie;
@@ -67,7 +69,7 @@ void Game::DrawMovie()
 							cout << movie[i];
 						}
 						prevMovie = movie;
-						currentY = 1, currentX = 1;
+						currentY = ROWS / 4, currentX = 1;
 					}
 				}
 			}
@@ -822,9 +824,10 @@ void Game::RunWorld(bool& restart)
 	CreateWorld();
 
 	int tick = 0, charID = 0, spawnTick = 1, button = NOKEY;
+	bool fireButton = false;
 
 	thread pressKeys([&] {
-		HotKeys(button);
+		HotKeys(button, fireButton);
 		});
 	pressKeys.detach();
 
@@ -845,7 +848,7 @@ void Game::RunWorld(bool& restart)
 				if (tick % playerList[i]->GetSpeed() == 0) {
 					playerList[i]->MoveObject(button);
 
-					if (button == SPACEKEY) {
+					if (fireButton) {
 						playerList[i]->Shot(allObjectList, bulletList, bullet, PLAYER);
 					}
 				}

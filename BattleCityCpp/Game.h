@@ -146,7 +146,7 @@ protected:
 
     void SetPos(int x, int y);
 
-    void HotKeys(int& button);
+    void HotKeys(int& button, bool &fireButton);
 
     void DrawMovie();
 
