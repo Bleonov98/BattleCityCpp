@@ -35,7 +35,6 @@ void Game::DrawMovie()
 	int mRows = 31, mCols = 122, currentX = 1, currentY = ROWS/4;
 
 	int filesCnt = 22;
-	LPSTR prevMovie;
 
 	PlaySound(MAKEINTRESOURCE(IDR_WAVE1), NULL, SND_RESOURCE | SND_ASYNC);
 
@@ -64,11 +63,8 @@ void Game::DrawMovie()
 							SetPos(currentX, currentY);
 							currentX++;
 
-							if (resId)
-							//if (movie[i] == prevMovie[i]) continue;
 							cout << movie[i];
 						}
-						prevMovie = movie;
 						currentY = ROWS / 4, currentX = 1;
 					}
 				}
